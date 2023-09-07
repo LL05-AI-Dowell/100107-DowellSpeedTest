@@ -4,7 +4,7 @@ from urllib.parse import unquote_plus
 from difflib import get_close_matches
 from concurrent.futures import ThreadPoolExecutor
 
-scraper = BS4WebScraper()
+# ------------------------SOCIAL PLATFORMS------------------------ #
 
 SOCIAL_PLATFORMS = {
     "facebook": "https://www.facebook.com/",
@@ -46,11 +46,20 @@ SOCIAL_PLATFORMS = {
     "squarespace": "https://www.squarespace.com/preview/",
 }
 
-class WebsiteInfoFinder:
+# ----------------------------------------------------------------- #
 
-    def __init__(self, web_url: str, engine: BS4WebScraper = scraper, max_search_depth: int = 0) -> None:
+
+
+class WebsiteInfoScraper:
+    """
+    Fetches information about a website or webpage.
+    """
+
+    engine = BS4WebScraper()
+
+    def __init__(self, web_url: str, max_search_depth: int = 0, engine: BS4WebScraper = None):
         """
-        Initializes a WebsiteInfoFinder object.
+        Initializes a WebsiteInfoScraper object.
 
         :param web_url: The url of the website or webpage to find information about.
         :param engine: The web scraper to use to find information about the website. \
@@ -61,13 +70,19 @@ class WebsiteInfoFinder:
         If set to 1, the base url and all the links on the base url are searched. \
         If set to 2, the base url, all the links on the base url and all the links on the links on the base url are searched and so on
         """
-        if not isinstance(engine, BS4WebScraper):
-            raise TypeError(f"Expected scraper to be of type {BS4WebScraper.__name__}, got {type(scraper)} instead.")
+        if engine and not isinstance(engine, BS4WebScraper):
+            raise TypeError(f"Expected scraper to be of type {BS4WebScraper.__name__}, got {type(engine)} instead.")
         self.target = web_url
-        self.engine = engine
+        self.engine = engine if engine else self.engine
         self.maximum_search_depth = max_search_depth
 
+
     def find_website_name(self):
+        """
+        Find website name.
+
+        :return: Website name if found else None
+        """
         base_url = self.engine.get_base_url(self.target)
         set_1 = self.engine.find_all_tags(
             url=base_url,
@@ -140,7 +155,7 @@ class WebsiteInfoFinder:
         return self.engine.find_links(url=self.target, depth=self.maximum_search_depth)
 
 
-    def find_logos(self):
+    def find_website_logos(self):
         """
         Finds the logos of the website. 
         
@@ -236,28 +251,78 @@ class WebsiteInfoFinder:
         return social_url
     
 
-    def find_links_related_to(self, _s: str):
+    def find_website_social_handles(self, platform_names: list[str] = None):
         """
-        Similar to find_links, but only returns links that contain the string _s.
+        Finds social media handles for the website on a list of social media platforms.
 
-        :param _s: The string to search for in the links.
+        :param platform_names: A list of social media platforms to find the social handles for. If None,\
+              all the supported social media platforms are searched for.
+        :return: A dictionary of the social media handles found.
+        """
+        platform_names = list(SOCIAL_PLATFORMS.keys()) if not platform_names else platform_names
+        result = {}
+        def add_result(platform_name):
+            result[platform_name] = self.find_website_social_handle_for(platform_name)
+        
+        with ThreadPoolExecutor() as executor:
+            executor.map(add_result, platform_names)
+
+        result_items = list(result.items())
+        for key, value in result_items:
+            if not value:
+                result.pop(key)
+        return result   
+    
+
+    def find_links_related_to(self, _s: str | list[str], links: list[str] = None):
+        """
+        Similar to find_links, but only returns links that contain the string _s or the strings
+        in list _s
+
+        :param _s: The string or list of strings to search for in the links.
+        :param links: A list of links to search in. If None, the links on the website are searched.
         :return: A list of urls of the links found.
         """
-        links = self.find_links()
-        matches = [ link for link in links if _s.lower() in link.lower() ]
-        return matches
+        links = self.find_links() if not links else links
+        def get_matches(string: str):
+            return [ link for link in links if string.lower() in link.lower() ]
+        if isinstance(_s, str):
+            return get_matches(_s)
+        return list(set([ link for _s_ in _s for link in get_matches(_s_) ]))
 
 
-    def find_all_social_media_links(self):
+    def find_all_social_media_links(self, platform_names: list[str] = None):
+        """
+        Finds all the social media links on the website.
+
+        :param platform_names: A list of social media platforms to find the social media links for. If None,\
+              all the supported social media platforms are searched for.
+        :return: A dictionary of the social media links found.
+        """
+        website_base_url = self.engine.get_base_url(self.target)
+        platform_names = list(SOCIAL_PLATFORMS.keys()) if not platform_names else platform_names
+        if not platform_names:
+            # Remove the website from the list of social platform url to search for. 
+            # If the website its self is a social platform,
+            for index, (_, value) in enumerate(SOCIAL_PLATFORMS.items()):
+                if website_base_url in value:
+                    platform_names.pop(index)
+                    break
         result = {}
+        links = self.find_links()
+        def add_result(platform_name):
+            result[platform_name] = self.find_links_related_to(platform_name, links)
+
         with ThreadPoolExecutor() as executor:
-            executor.map(
-                lambda platform_name: setattr(result, platform_name, self.find_links_related_to(platform_name)), 
-                SOCIAL_PLATFORMS.keys()
-            )
-        return list(filter(lambda x: bool(x), result))
+            executor.map(add_result, platform_names)
 
-
-if __name__ == "__main__":
-    finder = WebsiteInfoFinder(web_url="https://dribbble.com/", max_search_depth=0)
-    print(finder.find_emails())
+        result_items = list(result.items())
+        for key, value in result_items:
+            if not value:
+                result.pop(key)
+        return result
+    
+    
+    def find_website_address(self):
+        # Implementation not yet decided
+        pass
