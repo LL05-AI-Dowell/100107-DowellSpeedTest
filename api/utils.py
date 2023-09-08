@@ -284,8 +284,10 @@ class WebsiteInfoScraper:
         :return: A list of urls of the links found.
         """
         links = self.find_links() if not links else links
+
         def get_matches(string: str):
             return [ link for link in links if string.lower() in link.lower() ]
+        
         if isinstance(_s, str):
             return get_matches(_s)
         return list(set([ link for _s_ in _s for link in get_matches(_s_) ]))
