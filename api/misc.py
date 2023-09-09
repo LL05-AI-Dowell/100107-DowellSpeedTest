@@ -5,7 +5,7 @@ INFO_REQUEST_FORMAT = {
     "name": True,
     "logos": True,
     "address": True,
-    "site_socials": {
+    "website_socials": {
         "all": True,
         "choices": ["facebook", "twitter", "instagram", "linkedin", "youtube", "pinterest", "tumblr", "snapchat"]
     },

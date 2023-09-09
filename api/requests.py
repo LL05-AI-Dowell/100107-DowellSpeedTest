@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse
+from django.http.response import JsonResponse
 
 from .utils import WebsiteInfoScraper
 from .validators import WebsiteInfoRequestBodyValidator
@@ -125,7 +125,6 @@ class WebsiteInfoRequest:
                     result[key] = getattr(info_scraper, method_correspondence[key])(value)
                 elif value:
                     result[key] = getattr(info_scraper, method_correspondence[key])()
-
         # Validate the result
         return self.validate_processed_result(result)
     
@@ -180,14 +179,6 @@ class WebsiteInfoRequest:
         """
         response_dict = self.get_response_dict()
         if response_dict:
-            return HttpResponse(
-                content=response_dict,
-                headers={'Content-Type': 'application/json'},
-                status=200,
-            )
-        return HttpResponse(
-            body={"detail": self.errors},
-            headers={'Content-Type': 'application/json'},
-            status=400,
-        )
+            return JsonResponse(data=response_dict,status=200)
+        return JsonResponse(data={"detail": self.errors}, status=400)
 

@@ -55,7 +55,7 @@ class WebsiteInfoScraper:
     Fetches information about a website or webpage.
     """
 
-    engine = BS4WebScraper()
+    engine = BS4WebScraper(log_to_console=False)
 
     def __init__(self, web_url: str, max_search_depth: int = 0, engine: BS4WebScraper = None):
         """
@@ -116,7 +116,7 @@ class WebsiteInfoScraper:
         tags = set_1 + set_2 + set_3 + set_4
         results = []
         for tag in tags:
-            content = tag.get("content", None) or tag.text
+            content = tag.get("content", None) or tag.text.split()[0]
             if content:
                 results.append(content)
         names = set(results)
@@ -133,7 +133,6 @@ class WebsiteInfoScraper:
         """
         result = self.engine.find_emails(url=self.target, depth=self.maximum_search_depth)
         return list(set(result))
-
     
 
     def find_phone_numbers(self):
@@ -236,7 +235,11 @@ class WebsiteInfoScraper:
         for page_name in ("contact", "about"):
             page_url = self.guess_page_url(page_name)
             if page_url and parse_url(page_url).scheme in ["http", "https"]:
-                new_finder = self.__class__(page_url, self.engine, self.maximum_search_depth)
+                new_finder = self.__class__(
+                    web_url=page_url, 
+                    max_search_depth=self.maximum_search_depth,
+                    engine = self.engine
+                )
                 related_links = new_finder.find_links_related_to(platform_name)
                 if related_links:
                     website_name = self.find_website_name()
@@ -260,18 +263,13 @@ class WebsiteInfoScraper:
         :return: A dictionary of the social media handles found.
         """
         platform_names = list(SOCIAL_PLATFORMS.keys()) if not platform_names else platform_names
-        result = {}
+        r = {}
         def add_result(platform_name):
-            result[platform_name] = self.find_website_social_handle_for(platform_name)
-        
+            r[platform_name] = self.find_website_social_handle_for(platform_name)
+
         with ThreadPoolExecutor() as executor:
             executor.map(add_result, platform_names)
-
-        result_items = list(result.items())
-        for key, value in result_items:
-            if not value:
-                result.pop(key)
-        return result   
+        return r
     
 
     def find_links_related_to(self, _s: str | list[str], links: list[str] = None):
@@ -281,16 +279,16 @@ class WebsiteInfoScraper:
 
         :param _s: The string or list of strings to search for in the links.
         :param links: A list of links to search in. If None, the links on the website are searched.
-        :return: A list of urls of the links found.
+        :return: A list of urls of the links found or a dictionary of each result if `_s` is a list.
         """
         links = self.find_links() if not links else links
 
         def get_matches(string: str):
-            return [ link for link in links if string.lower() in link.lower() ]
+            return [ link for link in links if string.lower() in link.lower() ] or None
         
         if isinstance(_s, str):
             return get_matches(_s)
-        return list(set([ link for _s_ in _s for link in get_matches(_s_) ]))
+        return { _s_ : get_matches(_s_) for _s_ in _s }
 
 
     def find_all_social_media_links(self, platform_names: list[str] = None):
@@ -310,19 +308,7 @@ class WebsiteInfoScraper:
                 if website_base_url in value:
                     platform_names.pop(index)
                     break
-        result = {}
-        links = self.find_links()
-        def add_result(platform_name):
-            result[platform_name] = self.find_links_related_to(platform_name, links)
-
-        with ThreadPoolExecutor() as executor:
-            executor.map(add_result, platform_names)
-
-        result_items = list(result.items())
-        for key, value in result_items:
-            if not value:
-                result.pop(key)
-        return result
+        return self.find_links_related_to(platform_names)
     
     
     def find_website_address(self):
