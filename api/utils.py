@@ -4,50 +4,7 @@ from urllib.parse import unquote_plus
 from difflib import get_close_matches
 from concurrent.futures import ThreadPoolExecutor
 
-# ------------------------SOCIAL PLATFORMS------------------------ #
-
-SOCIAL_PLATFORMS = {
-    "facebook": "https://www.facebook.com/",
-    "twitter": "https://twitter.com/",
-    "instagram": "https://www.instagram.com/",
-    "linkedin": "https://www.linkedin.com/company/",
-    "youtube": "https://www.youtube.com/",
-    "pinterest": "https://www.pinterest.com/",
-    "tumblr": "https://www.tumblr.com/",
-    "reddit": "https://www.reddit.com/user/",
-    "flickr": "https://www.flickr.com/people/",
-    "snapchat": "https://www.snapchat.com/add/",
-    "whatsapp": "https://wa.me/",
-    "telegram": "https://t.me/",
-    "wechat": "https://weixin.qq.com/",
-    "line": "https://line.me/R/ti/p/",
-    "viber": "https://chats.viber.com/",
-    "vk": "https://vk.com/",
-    "tiktok": "https://www.tiktok.com/@",
-    "soundcloud": "https://soundcloud.com/",
-    "spotify": "https://open.spotify.com/user/",
-    "medium": "https://medium.com/@",
-    "quora": "https://www.quora.com/profile/",
-    "twitch": "https://www.twitch.tv/",
-    "behance": "https://www.behance.net/",
-    "dribbble": "https://dribbble.com/",
-    "deviantart": "https://www.deviantart.com/",
-    "foursquare": "https://foursquare.com/",
-    "goodreads": "https://www.goodreads.com/",
-    "hackernews": "https://news.ycombinator.com/user?id=",
-    "producthunt": "https://www.producthunt.com/@",
-    "tripadvisor": "https://www.tripadvisor.com/members/",
-    "yelp": "https://www.yelp.com/user_details?userid=",
-    "wordpress": "https://profiles.wordpress.org/",
-    "blogger": "https://www.blogger.com/profile/",
-    "wix": "https://www.wix.com/dashboard/",
-    "weebly": "https://www.weebly.com/editor/main.php#/site/",
-    "jimdo": "https://www.jimdo.com/app/profile/",
-    "squarespace": "https://www.squarespace.com/preview/",
-}
-
-# ----------------------------------------------------------------- #
-
+from .misc import SOCIAL_PLATFORMS
 
 
 class WebsiteInfoScraper:
@@ -77,7 +34,7 @@ class WebsiteInfoScraper:
         self.maximum_search_depth = max_search_depth
 
 
-    def find_website_name(self):
+    def find_website_name(self) -> str | None:
         """
         Find website name.
 
@@ -219,7 +176,25 @@ class WebsiteInfoScraper:
         return None
     
 
-    def find_website_social_handle_for(self, platform_name: str):
+    def guess_pages_urls(self, page_names: list[str]):
+        """
+        Tries to guess the correct urls of a list of pages on the website based on the page names.
+
+        :param page_names: A list of page names to guess the urls of. \
+            Can be the names of external pages or pages on the website\
+                  as long as they can related to a url on the website.
+        :return: A dictionary of the urls of the pages found.
+        """
+        r = {}
+        def add_result(page_name):
+            r[page_name] = self.guess_page_url(page_name)
+
+        with ThreadPoolExecutor() as executor:
+            executor.map(add_result, page_names)
+        return r
+    
+
+    def find_website_social_handle(self, platform_name: str) -> str:
         """
         Finds social media handle for the website on a social media platform.
 
@@ -240,18 +215,20 @@ class WebsiteInfoScraper:
                     max_search_depth=self.maximum_search_depth,
                     engine = self.engine
                 )
-                related_links = new_finder.find_links_related_to(platform_name)
-                if related_links:
-                    website_name = self.find_website_name()
-                    social_handle_matches = get_close_matches(website_name, related_links, n=len(related_links)//2 or 1, cutoff=0.3)
-                    if social_handle_matches:
-                        return social_handle_matches[0]
+                return new_finder.guess_page_url(platform_name)
             continue
         
-        # If url cannot be found in those pages, resort to checking the base url for social handle.
+        # If url cannot be found in those pages, resort to checking the base url for social handle that matches the website's name
         # This is less likely to be the correct one, but it's better than nothing.
-        social_url = self.guess_page_url(platform_name)
-        return social_url
+        website_name = self.find_website_name()
+        related_links = self.find_links_related_to(platform_name)
+        if related_links and website_name:
+            matches = get_close_matches(website_name.lower(), related_links, n=len(related_links)//2 or 1, cutoff=0.3)
+            if matches:
+                return matches[0]
+        if related_links:
+            return related_links[0]
+        return None
     
 
     def find_website_social_handles(self, platform_names: list[str] = None):
@@ -262,10 +239,18 @@ class WebsiteInfoScraper:
               all the supported social media platforms are searched for.
         :return: A dictionary of the social media handles found.
         """
-        platform_names = list(SOCIAL_PLATFORMS.keys()) if not platform_names else platform_names
+        website_base_url = self.engine.get_base_url(self.target)
+        platform_names = list(SOCIAL_PLATFORMS.keys()) if not platform_names else [ name.lower() for name in platform_names ]
+        if not platform_names:
+            # Remove the website from the list of social platform url to search for. 
+            # If the website its self is a social platform,
+            for index, (_, value) in enumerate(SOCIAL_PLATFORMS.items()):
+                if website_base_url in value:
+                    platform_names.pop(index)
+                    break
         r = {}
         def add_result(platform_name):
-            r[platform_name] = self.find_website_social_handle_for(platform_name)
+            r[platform_name] = self.find_website_social_handle(platform_name)
 
         with ThreadPoolExecutor() as executor:
             executor.map(add_result, platform_names)
@@ -274,8 +259,10 @@ class WebsiteInfoScraper:
 
     def find_links_related_to(self, _s: str | list[str], links: list[str] = None):
         """
-        Similar to find_links, but only returns links that contain the string _s or the strings
-        in list _s
+        Similar to `guess_pages_urls` method, but is more general and can return single or multiple results.
+        For more accurate multiple results, use `guess_pages_urls` method instead.
+        For more accurate single results, use `guess_page_url` method instead.
+        For better performance, use this method.
 
         :param _s: The string or list of strings to search for in the links.
         :param links: A list of links to search in. If None, the links on the website are searched.
@@ -300,7 +287,7 @@ class WebsiteInfoScraper:
         :return: A dictionary of the social media links found.
         """
         website_base_url = self.engine.get_base_url(self.target)
-        platform_names = list(SOCIAL_PLATFORMS.keys()) if not platform_names else platform_names
+        platform_names = list(SOCIAL_PLATFORMS.keys()) if not platform_names else [ name.lower() for name in platform_names ]
         if not platform_names:
             # Remove the website from the list of social platform url to search for. 
             # If the website its self is a social platform,
