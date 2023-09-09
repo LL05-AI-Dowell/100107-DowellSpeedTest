@@ -90,7 +90,7 @@ class WebsiteInfoRequest:
         except ValidationError as exc:
             if self.raise_exception:
                 raise exc
-            self.errors.update(exc.error_dict)
+            self._errors.update(exc.error_dict)
             self._is_valid = False
         else:
             self._is_valid = True
@@ -165,17 +165,17 @@ class WebsiteInfoRequest:
         except ValidationError as exc:
             if self.raise_exception:
                 raise exc
-            self.errors.update(exc.error_dict)
+            self._errors.update(exc.error_dict)
             return None
         return response_dict
     
 
-    def get_http_response(self):
+    def get_json_response(self):
         """
-        Returns the response of the info request as an HTTPResponse object.
+        Returns the response of the info request as a `django.http.response.JsonResponse` object.
 
         :return: The result of gotten from processing the request
-        :rtype: HTTPResponse
+        :rtype: JsonResponse
         """
         response_dict = self.get_response_dict()
         if response_dict:
