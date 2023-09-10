@@ -1,3 +1,4 @@
+import re
 from bs4_web_scraper.scraper import BS4WebScraper
 from urllib3.util import parse_url
 from urllib.parse import unquote_plus
@@ -156,7 +157,7 @@ class WebsiteInfoScraper:
         )
         # Try and find a close match
         urls = {unquote_plus(link) : link for link in links}
-        matches = get_close_matches(page_name, urls.keys(), n=len(urls)//2 or 1, cutoff=0.3)
+        matches = get_close_matches(page_name.lower(), urls.keys(), n=len(urls)//2 or 1, cutoff=0.5)
         match = urls.get(matches[0]) if matches else None
         if match:
             return match
@@ -215,7 +216,13 @@ class WebsiteInfoScraper:
                     max_search_depth=self.maximum_search_depth,
                     engine = self.engine
                 )
-                return new_finder.guess_page_url(platform_name)
+                social_url = new_finder.guess_page_url(platform_name)
+                if social_url:
+                    return social_url
+                else:
+                    related_links = new_finder.find_links_related_to(platform_name)
+                    if related_links:
+                        return related_links[0]
             continue
         
         # If url cannot be found in those pages, resort to checking the base url for social handle that matches the website's name
@@ -254,7 +261,7 @@ class WebsiteInfoScraper:
 
         with ThreadPoolExecutor() as executor:
             executor.map(add_result, platform_names)
-        return r
+        return r or None
     
 
     def find_links_related_to(self, _s: str | list[str], links: list[str] = None):

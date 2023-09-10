@@ -5,7 +5,6 @@ from .requests import WebsiteInfoRequest
 from .serializers import WebsiteInfoRequestSerializer
 
 
-
 class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
     serializer_class = WebsiteInfoRequestSerializer
 
