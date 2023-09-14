@@ -1,7 +1,9 @@
+from typing import Dict, Never
+from urllib import response
 from django.core.exceptions import ValidationError
 from django.http.response import JsonResponse
 
-from .utils import WebsiteInfoScraper
+from .utils import WebsiteInfoScraper, sort_emails_by_validity
 from .validators import WebsiteInfoRequestBodyValidator
 from .misc import info_request_smc, INFO_REQUEST_FORMAT
 
@@ -12,13 +14,13 @@ class WebsiteInfoRequest:
     Object to represent a request to find information about a website.
     """
 
-    _is_valid = False
-    _body = None
+    _is_valid: Never = False
+    _body: Never = None
     info_request_name = "info_request" 
     web_url_name = "web_url"
     max_search_depth_name = "max_search_depth"
     scraper_class = WebsiteInfoScraper
-    _errors = {}
+    _errors: Never = {}
     raise_exception = True
 
     def __init__(self, body: dict, **kwargs):
@@ -41,23 +43,35 @@ class WebsiteInfoRequest:
                 raise ValueError(f"Invalid keyword argument `{key}`")
             setattr(self, key, value)
         # Set body after other kwargs have been set, because body validation may depend on them
-        self._body = self.validate_body(dict(body))
+        self._body = dict(body)
+
+    
+    def __setattr__(self, __name: str, __value):
+        """
+        Sets the value of an attribute.
+        """
+        if __name == "_body":
+            __value = self.validate_body(__value)
+            self._url = __value.get(self.web_url_name, None)
+            self._max_search_depth = __value.get(self.max_search_depth_name, 0)
+            self._request = __value.get(self.info_request_name, {})
+        return super().__setattr__(__name, __value)
 
  
     @property
-    def body(self):
+    def body(self) -> Dict:
         """
         Request body
         """
         return self._body
 
     @body.setter
-    def set_body(self, value: dict):
+    def body(self, value: dict):
         """
         Sets request body
         """
-        self._body = self.validate_body(value)
-
+        self._body = dict(value)
+        
     @property
     def errors(self):
         """
@@ -71,6 +85,36 @@ class WebsiteInfoRequest:
         Checks whether the request body is valid or not.
         """
         return self._is_valid
+    
+    @property
+    def url(self) -> str:
+        """
+        Url of the target website
+        """
+        try:
+            return self._url
+        except AttributeError:
+            raise ValidationError("Request body has not been validated yet. Call `self.validate_body` first.")
+    
+    @property
+    def max_search_depth(self) -> int:
+        """
+        Maximum search depth
+        """
+        try:
+            return self._max_search_depth
+        except AttributeError:
+            raise ValidationError("Request body has not been validated yet. Call `self.validate_body` first.")
+        
+    @property
+    def request(self) -> Dict:
+        """
+        Info request
+        """
+        try:
+            return self._request
+        except AttributeError:
+            raise ValidationError("Request body has not been validated yet. Call `self.validate_body` first.")
 
 
     def validate_body(self, body: dict):
@@ -108,13 +152,9 @@ class WebsiteInfoRequest:
                 "WebsiteInfoRequest is not valid. Cannot process request. \
                     Check self.errors for more information."
             )
-        web_url = self.body.get(self.web_url_name, None)
-        max_search_depth = self.body.get(self.max_search_depth_name, 0)
-        info_scraper = self.scraper_class(web_url=web_url, max_search_depth=max_search_depth)
-        info_request : dict = self.body.get(self.info_request_name)
-
+        info_scraper = self.scraper_class(web_url=self.url, max_search_depth=self.max_search_depth)
         result = {}
-        for key, value in info_request.items():
+        for key, value in self.request.items():
             if key in method_correspondence:
                 if isinstance(value, dict):
                     if value.get("all", False):
@@ -170,15 +210,46 @@ class WebsiteInfoRequest:
         return response_dict
     
 
-    def get_json_response(self):
+    def get_json_response(self, dowell_api_key: str = None):
         """
-        Returns the response of the info request as a `django.http.response.JsonResponse` object.
+        Returns a structured response of the info request as a `django.http.response.JsonResponse` object.
+        If dowell_api_key is provided, the emails are sorted into verified and unverified emails.
 
-        :return: The result of gotten from processing the request
+        :param dowell_api_key: Dowell API key
+        :return: The structured result gotten from processing the request
         :rtype: JsonResponse
         """
-        response_dict = self.get_response_dict()
+        response_dict = self.get_structured_response_dict(dowell_api_key=dowell_api_key)
         if response_dict:
             return JsonResponse(data=response_dict,status=200)
         return JsonResponse(data={"detail": self.errors}, status=400)
+
+
+    def get_structured_response_dict(self, dowell_api_key: str = None):
+        """
+        Restructure the response dict for API response.
+        If dowell_api_key is provided, the emails are sorted into verified and unverified emails.
+
+        :param dowell_api_key: Dowell API key
+        :return: Restructured response dict
+        """
+        response_dict = self.get_response_dict()
+        if not response_dict:
+            return None
+        structured_dict = {}
+        structured_dict["meta_data"] = response_dict
+        emails = response_dict.get('all_emails', [])
+        if dowell_api_key:
+            valid_emails, invalid_emails = sort_emails_by_validity(emails, dowell_api_key)
+            structured_dict['verified_emails'] = valid_emails
+            structured_dict['unverified_emails'] = invalid_emails
+        structured_dict['emails_count'] = len(emails)
+        structured_dict['company_name'] = response_dict.get('name', None)
+        structured_dict['phone_numbers'] = response_dict.get('all_phone_numbers', None)
+        structured_dict['company_address'] = response_dict.get('address', None)
+        structured_dict["emails_found"] = response_dict.get("all_emails", [])
+        structured_dict["logos"] = response_dict.get("logos", [])
+        structured_dict["company_socials"] = response_dict.get("website_socials", {})
+        structured_dict['webpage_url'] = self.url
+        return structured_dict
 

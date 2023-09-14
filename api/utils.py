@@ -4,6 +4,8 @@ from urllib3.util import parse_url
 from urllib.parse import unquote_plus
 from difflib import get_close_matches
 from concurrent.futures import ThreadPoolExecutor
+import requests
+from typing import Iterable, List, Dict
 
 from .misc import SOCIAL_PLATFORMS
 
@@ -138,7 +140,7 @@ class WebsiteInfoScraper:
         )
         logo_tags.extend(image_meta_tags)
         logos = [ self.engine.get_tag_rra(tag, download=False) for tag in logo_tags ]
-        return list(filter(lambda x : bool(x), logos))
+        return list(set(filter(lambda x : bool(x), logos)))
     
 
     def guess_page_url(self, page_name: str):
@@ -308,3 +310,62 @@ class WebsiteInfoScraper:
     def find_website_address(self):
         # Implementation not yet decided
         pass
+
+
+def is_email(address: str):
+    """
+    Checks if the address provided is a valid email address
+
+    :param address: email address to be checked
+    :return: True if address is an email address else false
+    """
+    match = re.match(r'[-|\w\.]+@\w+.\w{2,}', address)
+    return match != None
+
+
+email_api_url = lambda api_key: f"https://100085.pythonanywhere.com/api/v1/mail/{api_key}/"
+
+
+def validate_email(email_address: str, dowell_api_key: str) -> bool:
+    """
+    Check is the email address provided is a valid and active email address using Dowell Email API.
+
+    :param email_address: email address to validate
+    :param dowell_api_key: user's dowell client admin api key.
+    :return: True if valid else False
+    """
+    if not is_email(email_address):
+        raise ValueError("email_address value is not valid")
+    response = requests.post(
+        url=email_api_url(dowell_api_key),
+        data={"email": email_address}, 
+        params={"type": "validate"}
+    )
+    if response.status_code != 200:
+        response.raise_for_status()
+    return response.json()["success"]
+
+
+def sort_emails_by_validity(self, emails: Iterable[str], dowell_api_key: str) -> tuple[List[str], List[str]]:
+    """
+    Sorts a list of emails into valid and invalid emails.
+    Uses Dowell Email API to determine email validity.
+
+    :param emails: A list of emails to sort.
+    :param dowell_api_key: user's dowell client admin api key.
+    :return: A tuple of two lists. The first list contains valid emails and the second list contains invalid emails.
+    """
+    valid = []
+    invalid = []
+    if not isinstance(emails, Iterable):
+        raise TypeError("Expected emails to be an iterable of strings")
+    for email in emails:
+        try:
+            if validate_email(email, dowell_api_key):
+                valid.append(email)
+            else:
+                invalid.append(email)
+        except Exception:
+            invalid.append(email)
+    return valid, invalid
+
