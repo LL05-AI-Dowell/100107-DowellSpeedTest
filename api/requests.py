@@ -1,5 +1,4 @@
-from typing import Dict, Never
-from urllib import response
+from typing import Dict
 from django.core.exceptions import ValidationError
 from django.http.response import JsonResponse
 
@@ -14,13 +13,13 @@ class WebsiteInfoRequest:
     Object to represent a request to find information about a website.
     """
 
-    _is_valid: Never = False
-    _body: Never = None
+    _is_valid = False
+    _body = None
     info_request_name = "info_request" 
     web_url_name = "web_url"
     max_search_depth_name = "max_search_depth"
     scraper_class = WebsiteInfoScraper
-    _errors: Never = {}
+    _errors = {}
     raise_exception = True
 
     def __init__(self, body: dict, **kwargs):
