@@ -1,8 +1,9 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, decorators
 from rest_framework.response import Response
 
 from .requests import WebsiteInfoRequest
 from .serializers import WebsiteInfoRequestSerializer
+from .misc import INFO_REQUEST_FORMAT
 
 
 class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
@@ -24,6 +25,16 @@ class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
             return Response(web_info_request.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@decorators.api_view(['GET'])
+def request_format_api_view(request, *args, **kwargs):
+    """
+    API view for getting website info extraction request format.
+    """
+    if request.method == 'GET':
+        return Response(INFO_REQUEST_FORMAT, status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 website_info_extraction_api_view = WebsiteInfoExtractionAPIView.as_view()

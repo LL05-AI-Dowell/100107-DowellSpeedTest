@@ -93,7 +93,7 @@ class WebsiteInfoRequest:
         try:
             return self._url
         except AttributeError:
-            raise ValidationError("Request body has not been validated yet. Call `self.validate_body` first.")
+            raise ValidationError("Request body has not been set yet.")
     
     @property
     def max_search_depth(self) -> int:
@@ -103,7 +103,7 @@ class WebsiteInfoRequest:
         try:
             return self._max_search_depth
         except AttributeError:
-            raise ValidationError("Request body has not been validated yet. Call `self.validate_body` first.")
+            raise ValidationError("Request body has not been set yet.")
         
     @property
     def request(self) -> Dict:
@@ -113,7 +113,7 @@ class WebsiteInfoRequest:
         try:
             return self._request
         except AttributeError:
-            raise ValidationError("Request body has not been validated yet. Call `self.validate_body` first.")
+            raise ValidationError("Request body has not been set yet.")
 
 
     def validate_body(self, body: dict):
@@ -220,7 +220,7 @@ class WebsiteInfoRequest:
         """
         response_dict = self.get_structured_response_dict(dowell_api_key=dowell_api_key)
         if response_dict:
-            return JsonResponse(data=response_dict,status=200)
+            return JsonResponse(data=response_dict, status=200)
         return JsonResponse(data={"detail": self.errors}, status=400)
 
 
@@ -237,18 +237,17 @@ class WebsiteInfoRequest:
             return None
         structured_dict = {}
         structured_dict["meta_data"] = response_dict
-        emails = response_dict.get('all_emails', [])
-        if dowell_api_key:
+        emails = response_dict.get('emails', [])
+        if emails and dowell_api_key:
             valid_emails, invalid_emails = sort_emails_by_validity(emails, dowell_api_key)
             structured_dict['verified_emails'] = valid_emails
             structured_dict['unverified_emails'] = invalid_emails
-        structured_dict['emails_count'] = len(emails)
         structured_dict['company_name'] = response_dict.get('name', None)
-        structured_dict['phone_numbers'] = response_dict.get('all_phone_numbers', None)
-        structured_dict['company_address'] = response_dict.get('address', None)
-        structured_dict["emails_found"] = response_dict.get("all_emails", [])
-        structured_dict["logos"] = response_dict.get("logos", [])
-        structured_dict["company_socials"] = response_dict.get("website_socials", {})
-        structured_dict['webpage_url'] = self.url
+        structured_dict['phone_numbers'] = response_dict.get('phone_numbers', None)
+        structured_dict['addresses'] = response_dict.get('addresses', None)
+        structured_dict["emails_found"] = response_dict.get("emails", None)
+        structured_dict["logos"] = response_dict.get("logos", None)
+        structured_dict["website_social_handles"] = response_dict.get("website_socials", None)
+        structured_dict['website_url'] = self.scraper_class(web_url=self.url).engine.get_base_url(self.url)
         return structured_dict
 

@@ -4,7 +4,7 @@
 INFO_REQUEST_FORMAT = {
     "name": True,
     "logos": True,
-    "address": True,
+    "addresses": True,
     "website_socials": {
         "all": True,
         "choices": ["facebook", "twitter", "instagram", "linkedin", "youtube", "pinterest", "tumblr", "snapchat"]
@@ -13,9 +13,9 @@ INFO_REQUEST_FORMAT = {
         "all": True,
         "choices": ["facebook", "twitter", "instagram", "linkedin", "youtube", "pinterest", "tumblr", "snapchat"]
     },
-    "all_phone_numbers": True,
-    "all_emails": True,
-    "all_links": True,
+    "phone_numbers": True,
+    "emails": True,
+    "links": True,
     "pages_url": ["about", "contact", "careers", "services", "products"]
 }
 
@@ -28,7 +28,7 @@ INFO_REQUEST_FORMAT = {
 INFO_REQUEST_SCRAPER_METHOD_CORRESPONDENCE = {
     "name": "find_website_name",
     "logos": "find_website_logos",
-    "address": "find_website_address",
+    "addresses": "find_addresses",
     "website_socials": {
         "all": "find_website_social_handles",
         "choices": "find_website_social_handles"
@@ -37,9 +37,9 @@ INFO_REQUEST_SCRAPER_METHOD_CORRESPONDENCE = {
         "all": "find_all_social_media_links",
         "choices": "find_all_social_media_links"
     },
-    "all_phone_numbers": "find_phone_numbers",
-    "all_emails": "find_emails",
-    "all_links":"find_links",
+    "phone_numbers": "find_phone_numbers",
+    "emails": "find_emails",
+    "links":"find_links",
     "pages_url": "guess_pages_urls",
 }
 
@@ -104,3 +104,60 @@ SOCIAL_PLATFORMS = {
 
 
 # ----------------------------------------------------------------- #
+
+# --------------- SOME COMMON TEXT THAT CAN BE FOUND IN ADDRESSES ------------- #
+
+common_address_components = [
+    'Street', 'St.',
+    'Avenue', 'Ave.',
+    'Road', 'Rd.',
+    'Lane', 'Ln.',
+    'Boulevard', 'Blvd.',
+    'Way', 'Driveway', 'Dr.',
+    'Court', 'Ct.',
+    'Place', 'Pl.',
+    'Square', 'Sq.',
+    'Terrace', 'Ter.',
+    'Circle', 'Cir.',
+    'Plaza', 'Plz.',
+    'Highway', 'Hwy.',
+    'Expressway', 'Expwy.',
+    'Route', 'Rte.',
+    'Trail', 'Trl.',
+    'Path', 'Pth.',
+    'Manor', 'Mnr.',
+    'Row', 'Rw.',
+    'Crescent', 'Cres.',
+    'Park', 'Pk.',
+    'Gardens', 'Gdns.',
+    'Mews', 'Commons',
+    'Close', 'Crossing',
+    'Parkway', 'Pkwy.',
+    'Alley', 'Aly.',
+    'Gate', 'Gt.',
+    'Ridge', 'Rdg.',
+    'Hill', 'Hl.',
+    'Valley', 'Vly.',
+    'Cove', 'Cv.',
+    'Cul-de-Sac', 'CdS.', 'Court', 'Ct.',
+    'Station', 'Stn.',
+    'Building', 'Bldg.',
+    'Apartment', 'Apt.',
+    'Suite', 'Unit',
+    'Room', 'Rm.',
+    'Floor', 'Fl.',
+    'Office', 'Ofc.',
+    'Department', 'Dept.',
+    'Block', 'Blk.',
+    'Lot',
+    'Condo', 'Cndo.', 'Cd.',
+    'Tower', 'Twr.',
+    'School', 'Sch.',
+    'University', 'Univ.',
+    'Library', 'Lib.',
+    'Church', 'Ch.',
+    'Temple', 'Tmp.',
+    'Mosque', 'Mq.', 'Synagogue', 'Syn.', 'Post Office', 'PO', 'City', 'Town', 'Village', 'District', 'County', 'Co.', 'State', 'Province', 'Country', 'Nation', 'Region', 'Territory', 'Postal Code', 'ZIP Code', 'Postcode', 'PO Box',
+]
+
+# --------------------------------------------------------------------------------- #

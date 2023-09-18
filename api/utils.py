@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 from typing import Iterable, List, Dict
 
-from .misc import SOCIAL_PLATFORMS
+from .misc import SOCIAL_PLATFORMS, common_address_components
 
 
 class WebsiteInfoScraper:
@@ -307,9 +307,22 @@ class WebsiteInfoScraper:
         return self.find_links_related_to(platform_names)
     
     
-    def find_website_address(self):
-        # Implementation not yet decided
-        pass
+    def find_addresses(self):
+        """Finds all addresses on website. Results are not guaranteed to be accurate."""
+        address_regex = r"(\d{2,5}[-;\.\|:]*)+(\s*[\w\.\s,]+){1,3}[\.|\s]*(\w{2,3})?[\.|\s]*(\d{5}|\w{2,3})?"
+        results = self.engine.find_pattern(
+            url=self.target,
+            regex=address_regex,
+        )
+        addresses = []
+        for result in results:
+            for c in common_address_components:
+                if c in result:
+                    result = re.sub(r"\n+", " ", result).strip()
+                    addresses.append(result)
+                    break
+        return addresses or None
+
 
 
 def is_email(address: str):
@@ -350,6 +363,8 @@ def sort_emails_by_validity(self, emails: Iterable[str], dowell_api_key: str) ->
     """
     Sorts a list of emails into valid and invalid emails.
     Uses Dowell Email API to determine email validity.
+
+    NOTE: Make sure Dowell Email service is activated for API key else all emails will be classified as invalid
 
     :param emails: A list of emails to sort.
     :param dowell_api_key: user's dowell client admin api key.
