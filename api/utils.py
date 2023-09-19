@@ -31,7 +31,7 @@ class WebsiteInfoScraper:
         If set to 2, the base url, all the links on the base url and all the links on the links on the base url are searched and so on
         """
         if engine and not isinstance(engine, BS4WebScraper):
-            raise TypeError(f"Expected scraper to be of type {BS4WebScraper.__name__}, got {type(engine)} instead.")
+            raise TypeError(f"Expected engine to be of type {BS4WebScraper.__name__}, got {type(engine)} instead.")
         self.target = web_url
         self.engine = engine if engine else self.engine
         self.maximum_search_depth = max_search_depth
