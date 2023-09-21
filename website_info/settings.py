@@ -39,9 +39,11 @@ INSTALLED_APPS = [
     # External deps
     'rest_framework',
     'corsheaders',
+    
 
     # local apps,
     'api.apps.ApiConfig',
+    'linkShortening'
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
