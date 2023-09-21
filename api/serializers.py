@@ -21,5 +21,5 @@ class WebsiteInfoRequestSerializer(serializers.Serializer):
     web_url = serializers.URLField(validators=[URLValidator], required=True)
     max_search_depth = serializers.IntegerField(min_value=0, max_value=2, required=False)
     info_request = serializers.JSONField(write_only=True, required=True, initial=INFO_REQUEST_FORMAT, validators=[InfoRequestValidator().validate])
-    api_key = serializers.CharField(write_only=True, required=False)
+    api_key = serializers.CharField(allow_null=False , required=False)
 
