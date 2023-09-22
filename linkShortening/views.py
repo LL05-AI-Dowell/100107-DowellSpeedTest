@@ -288,9 +288,6 @@ class codeqrupdate(APIView):
             param1 = request.data.get("word", word)
             param2 = request.data.get("word2", word2)
             param3 = request.data.get("word3", word3)
-
-            print(param1, param2, param3)
-            print(word, word2, word3)
             
             field = {"word": word, "word2": word2, "word3": word3}
 
@@ -310,6 +307,10 @@ class codeqrupdate(APIView):
         try:
             link = request.data.get("link", qrcode_["link_"])
             master_link = qrcode_["link"]
+
+            name = request.data.get("name")
+            is_active = request.data.get("is_active", qrcode_["is_active"])
+            
             
             # update the Link
             try:
@@ -345,7 +346,8 @@ class codeqrupdate(APIView):
             update_field = {
                 "user_id": qrcode_["user_id"],
                 "company_id": qrcode_["company_id"],
-                "is_active": request.data.get("is_active", qrcode_["is_active"]),
+                "name": name,
+                "is_active": is_active,
                 "qrcode_color": qrcode_color,
                 "link": master_link,
                 "link_": link,

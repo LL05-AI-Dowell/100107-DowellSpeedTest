@@ -283,6 +283,7 @@ def qrcode_type_defination(request, qrcode_color, logo, field, logo_url=None):
     user_id = request.data.get("user_id")
     company_id = request.data.get("company_id")
     link = request.data.get("link")
+    name = request.data.get("name")
     word  = create_short_uuid()
     word2 = create_short_uuid()
     word3 = create_short_uuid()
@@ -328,6 +329,7 @@ def qrcode_type_defination(request, qrcode_color, logo, field, logo_url=None):
     link_ = {
         "company_id": company_id,
         "user_id": user_id,
+        "name": name,
         "link": master_link,
         "qrcode_image_url": qr_code_url,
         "logo_url": logo_url,
