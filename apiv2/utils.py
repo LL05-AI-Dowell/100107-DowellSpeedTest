@@ -325,6 +325,15 @@ class WebsiteInfoScraper:
         return addresses or None
 
 
+def processApikey(api_key):
+    url = f'https://100105.pythonanywhere.com/api/v3/process-services/?type=api_service&api_key={api_key}'
+    payload = {
+        "service_id": "DOWELL10007"
+    }
+    response = requests.post(url, json=payload)
+    response_text = json.loads(response.text)
+    return response_text
+
 
 def is_email(address: str):
     """
@@ -340,18 +349,18 @@ def is_email(address: str):
 email_api_url = lambda api_key: f"https://100085.pythonanywhere.com/api/v1/mail/{api_key}/"
 
 
-def validate_email(email_address: str, dowell_api_key: str) -> bool:
+def validate_email(email_address: str, api_key: str) -> bool:
     """
     Check is the email address provided is a valid and active email address using Dowell Email API.
 
     :param email_address: email address to validate
-    :param dowell_api_key: user's dowell client admin api key.
+    :param api_key: user's dowell client admin api key.
     :return: True if valid else False
     """
     if not is_email(email_address):
         raise ValueError("email_address value is not valid")
     response = requests.post(
-        url=email_api_url(dowell_api_key),
+        url=email_api_url(api_key),
         data={"email": email_address}, 
         params={"type": "validate"}
     )
@@ -360,7 +369,9 @@ def validate_email(email_address: str, dowell_api_key: str) -> bool:
     return response.json()["success"]
 
 
-def sort_emails_by_validity(self, emails: Iterable[str], dowell_api_key: str) -> tuple[List[str], List[str]]:
+
+
+def sort_emails_by_validity(self, emails: Iterable[str], api_key: str) -> tuple[List[str], List[str]]:
     """
     Sorts a list of emails into valid and invalid emails.
     Uses Dowell Email API to determine email validity.
@@ -368,7 +379,7 @@ def sort_emails_by_validity(self, emails: Iterable[str], dowell_api_key: str) ->
     NOTE: Make sure Dowell Email service is activated for API key else all emails will be classified as invalid
 
     :param emails: A list of emails to sort.
-    :param dowell_api_key: user's dowell client admin api key.
+    :param api_key: user's dowell client admin api key.
     :return: A tuple of two lists. The first list contains valid emails and the second list contains invalid emails.
     """
     valid = []
@@ -377,7 +388,7 @@ def sort_emails_by_validity(self, emails: Iterable[str], dowell_api_key: str) ->
         raise TypeError("Expected emails to be an iterable of strings")
     for email in emails:
         try:
-            if validate_email(email, dowell_api_key):
+            if validate_email(email, api_key):
                 valid.append(email)
             else:
                 invalid.append(email)
@@ -386,11 +397,3 @@ def sort_emails_by_validity(self, emails: Iterable[str], dowell_api_key: str) ->
     return valid, invalid
 
 
-def processApikey(api_key):
-    url = f'https://100105.pythonanywhere.com/api/v3/process-services/?type=api_service&api_key={api_key}'
-    payload = {
-        "service_id": "DOWELL10007"
-    }
-    response = requests.post(url, json=payload)
-    response_text = json.loads(response.text)
-    return response_text

@@ -339,7 +339,7 @@ def is_email(address: str):
 email_api_url = lambda api_key: f"https://100085.pythonanywhere.com/api/v1/mail/{api_key}/"
 
 
-def validate_email(email_address: str, dowell_api_key: str) -> bool:
+def validate_email(email_address: str, api_key: str) -> bool:
     """
     Check is the email address provided is a valid and active email address using Dowell Email API.
 
@@ -350,7 +350,7 @@ def validate_email(email_address: str, dowell_api_key: str) -> bool:
     if not is_email(email_address):
         raise ValueError("email_address value is not valid")
     response = requests.post(
-        url=email_api_url(dowell_api_key),
+        url=email_api_url(api_key),
         data={"email": email_address}, 
         params={"type": "validate"}
     )
@@ -359,7 +359,7 @@ def validate_email(email_address: str, dowell_api_key: str) -> bool:
     return response.json()["success"]
 
 
-def sort_emails_by_validity(self, emails: Iterable[str], dowell_api_key: str) -> tuple[List[str], List[str]]:
+def sort_emails_by_validity(self, emails: Iterable[str], api_key: str) -> tuple[List[str], List[str]]:
     """
     Sorts a list of emails into valid and invalid emails.
     Uses Dowell Email API to determine email validity.
@@ -376,7 +376,7 @@ def sort_emails_by_validity(self, emails: Iterable[str], dowell_api_key: str) ->
         raise TypeError("Expected emails to be an iterable of strings")
     for email in emails:
         try:
-            if validate_email(email, dowell_api_key):
+            if validate_email(email, api_key):
                 valid.append(email)
             else:
                 invalid.append(email)
