@@ -224,12 +224,12 @@ class WebsiteInfoRequest:
         return JsonResponse(data={"detail": self.errors}, status=400)
 
 
-    def get_structured_response_dict(self, api_key: str = None):
+    def get_structured_response_dict(self, api_key):
         """
         Restructure the response dict for API response.
-        If dowell_api_key is provided, the emails are sorted into verified and unverified emails.
+        If api_key is provided, the emails are sorted into verified and unverified emails.
 
-        :param dowell_api_key: Dowell API key
+        :param api_key: Dowell API key
         :return: Restructured response dict
         """
         response_dict = self.get_response_dict()

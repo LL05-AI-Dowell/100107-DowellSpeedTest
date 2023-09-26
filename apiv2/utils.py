@@ -371,7 +371,7 @@ def validate_email(email_address: str, api_key: str) -> bool:
 
 
 
-def sort_emails_by_validity(self, emails: Iterable[str], api_key: str) -> tuple[List[str], List[str]]:
+def sort_emails_by_validity(emails: Iterable[str], api_key: processApikey) -> tuple[List[str], List[str]]:
     """
     Sorts a list of emails into valid and invalid emails.
     Uses Dowell Email API to determine email validity.
