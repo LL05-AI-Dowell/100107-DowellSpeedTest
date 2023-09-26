@@ -20,7 +20,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls'), name="api"),
-    path('api/v1/', include('apiv1.urls')),
-    path('api/v2/', include('apiv2.urls')),
+    path('api/v1/', include('APP.urls')),
     path('api/qrcode/v1/', include('linkShortening.urls')),
 ]

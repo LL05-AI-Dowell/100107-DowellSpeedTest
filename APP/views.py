@@ -1,8 +1,9 @@
+
 from rest_framework import generics, status, decorators
 from rest_framework.response import Response
 
-from apiv2.utils import processApikey
 
+from APP.utils import processApikey
 from .requests import WebsiteInfoRequest
 from .serializers import WebsiteInfoRequestSerializer
 from .misc import INFO_REQUEST_FORMAT
@@ -23,7 +24,7 @@ class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
             # Call the processApikey function to validate the API key
             api_key_response = processApikey(api_key)
             
-            if api_key_response.get('status') == 'valid':
+            if api_key_response.get('success'):
                 # If the API key is valid, proceed with website info extraction
                 web_info_request = WebsiteInfoRequest(body=validated_data)
                 response_dict = web_info_request.get_structured_response_dict(api_key)
