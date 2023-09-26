@@ -239,7 +239,7 @@ class WebsiteInfoRequest:
         structured_dict["meta_data"] = response_dict
         emails = response_dict.get('emails', [])
         if emails and api_key:
-            valid_emails, invalid_emails = self.sort_emails_by_validity(emails, api_key)
+            valid_emails, invalid_emails = sort_emails_by_validity(emails, api_key)
             structured_dict['verified_emails'] = valid_emails
             structured_dict['unverified_emails'] = invalid_emails
         structured_dict['company_name'] = response_dict.get('name', None)
