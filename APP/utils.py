@@ -358,7 +358,6 @@ def validate_email(email_address: str) -> bool:
     :return: True if valid else False
     """
     email = email_address
-    return True
 
     if not is_email(email_address):
         raise ValueError("email_address value is not valid")
