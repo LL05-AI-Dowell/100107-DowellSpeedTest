@@ -4,6 +4,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from datetime import datetime
+from django.utils import timezone
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from rest_framework.decorators import api_view
@@ -198,10 +200,14 @@ class codeqr(APIView):
             else:
                 logo_url = None
 
+            current_datetime = timezone.now()
+
             field = {
                 "qrcode_id": create_uuid(),
                 "qrcode_color": qrcode_color,
-                "is_active": is_active
+                "is_active": is_active,
+                "created_on": current_datetime.isoformat(),
+                "updated_on": None
             }
 
             update_field = {
@@ -217,9 +223,9 @@ class codeqr(APIView):
                 try:
                     # insertion_thread = threading.Thread(target=self.mongodb_worker, args=(field, update_field))
                     # insertion_thread.start()
-                    self.mongodb_worker(field,update_field)
-                except:
-                    return Response({"error": "An error occurred while starting the insertion thread"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    self.mongodb_worker(field ,update_field)
+                except Exception as e:
+                    return Response({"error": e}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response({"success": f"QR code created successfully.", "qrcode": field}, status=status.HTTP_201_CREATED)
 
      
@@ -342,6 +348,12 @@ class codeqrupdate(APIView):
             file_name = generate_file_name()
             qrcode_image_url = upload_image_to_interserver(img_qr, file_name)
 
+            try:
+                created_on = qrcode_["created_on"]
+            except:
+                created_on = None
+
+            current_datetime = timezone.now()
             field = {"qrcode_id": id}
             update_field = {
                 "user_id": qrcode_["user_id"],
@@ -355,6 +367,8 @@ class codeqrupdate(APIView):
                 "word2": param2,
                 "word3": param3,
                 "logo_url": logo_url,
+                "created_on": created_on,
+                "updated_on": current_datetime.isoformat(),
                 "qrcode_image_url": qrcode_image_url,
             }
 
