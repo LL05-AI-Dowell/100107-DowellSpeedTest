@@ -1,12 +1,11 @@
-
 from rest_framework import generics, status, decorators
 from rest_framework.response import Response
 
+from .serializers import ContactInfoRequestSerializer, WebsiteInfoRequestSerializer
 
-from APP.utils import processApikey
-from .requests import WebsiteInfoRequest
-from .serializers import WebsiteInfoRequestSerializer
-from .misc import INFO_REQUEST_FORMAT
+from utils.scraper import WebsiteInfoScraper
+from utils.requests import WebsiteInfoRequest
+from utils.misc import INFO_REQUEST_FORMAT
 
 
 class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
@@ -19,40 +18,15 @@ class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             validated_data = serializer.validated_data
-            api_key = validated_data.pop('api_key')
-            
-            # Call the processApikey function to validate the API key
-            api_key_response = processApikey(api_key)
-            
-            if api_key_response.get('success'):
-               
-                web_info_request = WebsiteInfoRequest(body=validated_data)
-                response_dict = web_info_request.get_structured_response_dict(api_key)
+            api_key = validated_data.pop('api_key', None)
+            web_info_request = WebsiteInfoRequest(body=validated_data)
+            response_dict = web_info_request.get_structured_response_dict(api_key)
 
-                if response_dict:
-                    return Response({
-                        "success": True,
-                        "message": "The information was successfully extracted",
-                        "data": response_dict,
-                        "credits":api_key_response.get('total_credits')
-                    }, status=status.HTTP_200_OK)
-                return Response({
-                    "success": False,
-                    "message": "The information was not successfully extracted",
-                    "data": web_info_request.errors,
-                    "credits":api_key_response.get('total_credits')
-                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            else:
-                return Response({
-                    "success": False,
-                    "message": api_key_response.get("message")
-                }, status=status.HTTP_401_UNAUTHORIZED)
+            if response_dict:
+                return Response(response_dict, status=status.HTTP_200_OK)
+            return Response(web_info_request.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response({
-            "success":False,
-            "message":"Posting wrong data to API",
-            "error":serializer.errors
-        }, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 @decorators.api_view(['GET'])
@@ -66,3 +40,22 @@ def request_format_api_view(request, *args, **kwargs):
 
 
 website_info_extraction_api_view = WebsiteInfoExtractionAPIView.as_view()
+
+
+class ContactUsAPI(generics.GenericAPIView):
+    serializer_class = ContactInfoRequestSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            contact_us_url = serializer.data.get("contact_us_url")
+            # validated_data = serializer.validated_data
+            web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
+            response_dict = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
+
+            # if response_dict:
+            return Response(response_dict, status=status.HTTP_200_OK)
+            # return Response("Error" , status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+contact_us_api_view = ContactUsAPI.as_view()

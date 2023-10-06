@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.core.validators import URLValidator
 
-from .misc import INFO_REQUEST_FORMAT
-from .validators import InfoRequestValidator
+from utils.misc import INFO_REQUEST_FORMAT
+from utils.validators import InfoRequestValidator
 
 
 class WebsiteInfoRequestSerializer(serializers.Serializer):
@@ -21,5 +21,8 @@ class WebsiteInfoRequestSerializer(serializers.Serializer):
     web_url = serializers.URLField(validators=[URLValidator], required=True)
     max_search_depth = serializers.IntegerField(min_value=0, max_value=2, required=False)
     info_request = serializers.JSONField(write_only=True, required=True, initial=INFO_REQUEST_FORMAT, validators=[InfoRequestValidator().validate])
-    api_key = serializers.CharField(allow_null=False , required=True)
+    api_key = serializers.CharField(allow_null=True , required=False)
 
+
+class ContactInfoRequestSerializer(serializers.Serializer):
+    contact_us_url = serializers.URLField(validators=[URLValidator], required=True)
