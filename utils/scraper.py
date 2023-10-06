@@ -1,3 +1,4 @@
+import json
 import re
 from bs4 import BeautifulSoup
 from bs4_web_scraper.scraper import BS4WebScraper
@@ -85,113 +86,6 @@ class WebsiteInfoScraper:
         matches = get_close_matches(host, names, n=len(names)//2 or 1, cutoff=0.3)
         return matches[0] if matches else None
     
-
-    def scrape_contact_us_page(self, web_url):
-        try:
-            contact_us_url = web_url 
-            response = requests.get(contact_us_url)
-            # Check if the request was successful
-            if response.status_code == 200:
-                # Parse the HTML content of the page
-                soup = BeautifulSoup(response.text, 'html.parser')
-                # print(soup.prettify())
-                form_elements = soup.find_all('form')
-                form_data = {}
-                # Loop through the <form> elements and process them as needed
-                if form_elements:
-                    for form in form_elements:
-                        # Extract form-specific information or fields here
-                        form_fields = form.find_all(['input', 'textarea'])
-                        for field in form_fields:
-                            field_name = field.get('name')
-                            field_type = field.get('type')
-                            if field_name or field_type:
-                                form_data[field_name] = field_type
-                            # Check if the field is a textarea
-                            if field.name == 'textarea':
-                                form_data[f"textarea"] = 'textarea'
-
-                    if form_data:
-                        return form_data
-                    else:
-                        return "No Form Fields found on the Contact Us Form."
-                else:
-                    return "Form not found on the Contact Us page."
-            else:
-                print(f"Failed to retrieve the contact us page. Status code: {response.status_code}")
-                return None
-            
-        except Exception as e:
-            print(f"An error occurred: {str(e)}")
-            return None
-
-
-
-
-    # def scrape_contact_us_page(self, web_url):
-    #     try:
-    #         # Construct the contact us page URL based on the web URL
-    #         # contact_us_url = web_url + '/contactus'
-    #         # contact_us_url = web_url + '/contact'
-    #         contact_us_url = web_url 
-
-    #         # Send an HTTP GET request to the contact us page
-    #         response = requests.get(contact_us_url)
-
-    #         # Check if the request was successful
-    #         if response.status_code == 200:
-    #             # Parse the HTML content of the page
-    #             soup = BeautifulSoup(response.text, 'html.parser')
-
-    #             # Find the form element on the page (you may need to inspect the page source to get the correct form selector)
-    #             form = soup.find('form')
-    #             if form:
-    #                 print(form)
-    #                 # Extract the name, email, and message fields from the form
-    #                 name_input = form.find('input', {'name': 'name'})
-    #                 email_input = form.find('input', {'name': 'email'})
-    #                 message_textarea = form.find('textarea', {'name': 'message'})
-
-    #                 # Extract the values (if available)
-    #                 name = name_input['value'] if name_input else None
-    #                 email = email_input['value'] if email_input else None
-    #                 message = message_textarea.get_text() if message_textarea else None
-
-    #                 # Extract all text content from the page
-    #                 all_text = soup.get_text()
-
-    #                 # Extract all links on the contact us page
-    #                 # links = [link.get('href') for link in soup.find_all('a')]
-
-    #                 # Extract all email addresses (simple pattern matching)
-
-    #                 # email_pattern = r'\S+@\S+'
-    #                 # Extract email addresses (simple pattern matching)
-    #                 # email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-    #                 # email_addresses = re.findall(email_pattern, all_text)
-
-    #                 # print(all_text)
-    #                 # Extract phone numbers (simple pattern matching)
-    #                 # phone_pattern = r'\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b'
-    #                 # phone_numbers = re.findall(phone_pattern, all_text)
-    #                 return {
-    #                     "name": name,
-    #                     "email": email,
-    #                     "text_area": message,
-    #                     # "links": links,
-    #                     # "email_addresses": email_addresses,
-    #                     # "phone_numbers": phone_numbers,
-    #                     # Add more fields as needed
-    #                 }
-    #             else:
-    #                 print("Form not found on the Contact Us page.")
-    #         else:
-    #             print(f"Failed to retrieve the contact us page. Status code: {response.status_code}")
-    #             return None
-            
-    #     except Exception as e:
-    #         print(f"An error occurred: {str(e)}")
-    #         return None
 
     def find_emails(self):
         """
@@ -430,7 +324,60 @@ class WebsiteInfoScraper:
                     addresses.append(result)
                     break
         return addresses or None
+    
+    def scrape_contact_us_page(self, web_url):
+        try:
+            contact_us_url = web_url 
+            response = requests.get(contact_us_url)
+            # Check if the request was successful
+            if response.status_code == 200:
+                # Parse the HTML content of the page
+                soup = BeautifulSoup(response.text, 'html.parser')
+ 
+                # html_str = soup.prettify()
+                # with open("soup.html", "w", encoding="utf-8") as file:
+                #     file.write(html_str)
+                    
+                form_elements = soup.find_all('form')
+                # print(form_elements)
+                form_data = {}
+                # Loop through the <form> elements and process them as needed
+                if form_elements:
+                    for form in form_elements:
+                        # Extract form-specific information or fields here
+                        form_fields = form.find_all(['input', 'textarea'])
+                        for field in form_fields:
+                            field_name = field.get('name')
+                            field_type = field.get('type')
+                            if field_name or field_type:
+                                form_data[field_name] = field_type
+                            # Check if the field is a textarea
+                            if field.name == 'textarea':
+                                form_data[f"textarea"] = 'textarea'
 
+                    if form_data:
+                        return form_data
+                    else:
+                        return "No Form Fields found on the Contact Us Form."
+                else:
+                    return "Form not found on the Contact Us page"
+            else:
+                print(f"Failed to retrieve the contact us page. Status code: {response.status_code}")
+                return None
+            
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+            return None
+
+
+def processApikey(api_key):
+    url = f'https://100105.pythonanywhere.com/api/v3/process-services/?type=api_service&api_key={api_key}'
+    payload = {
+        "service_id": "DOWELL10045"
+    }
+    response = requests.post(url, json=payload)
+    response_text = json.loads(response.text)
+    return response_text
 
 
 def is_email(address: str):
@@ -444,30 +391,32 @@ def is_email(address: str):
     return match != None
 
 
-email_api_url = lambda api_key: f"https://100085.pythonanywhere.com/api/v1/mail/{api_key}/"
+email_api_url = lambda api_key: "https://100085.pythonanywhere.com/api/uxlivinglab/verify-email/"
 
 
-def validate_email(email_address: str, dowell_api_key: str) -> bool:
+def validate_email(email_address: str) -> bool:
     """
     Check is the email address provided is a valid and active email address using Dowell Email API.
 
     :param email_address: email address to validate
-    :param dowell_api_key: user's dowell client admin api key.
+    :param api_key: user's dowell client admin api key.
     :return: True if valid else False
     """
+    email = email_address
+
     if not is_email(email_address):
         raise ValueError("email_address value is not valid")
     response = requests.post(
-        url=email_api_url(dowell_api_key),
         data={"email": email_address}, 
-        params={"type": "validate"}
     )
     if response.status_code != 200:
         response.raise_for_status()
     return response.json()["success"]
 
 
-def sort_emails_by_validity(self, emails: Iterable[str], dowell_api_key: str) -> tuple[List[str], List[str]]:
+
+
+def sort_emails_by_validity(emails: Iterable[str]) -> tuple[List[str], List[str]]:
     """
     Sorts a list of emails into valid and invalid emails.
     Uses Dowell Email API to determine email validity.
@@ -475,7 +424,7 @@ def sort_emails_by_validity(self, emails: Iterable[str], dowell_api_key: str) ->
     NOTE: Make sure Dowell Email service is activated for API key else all emails will be classified as invalid
 
     :param emails: A list of emails to sort.
-    :param dowell_api_key: user's dowell client admin api key.
+    :param api_key: user's dowell client admin api key.
     :return: A tuple of two lists. The first list contains valid emails and the second list contains invalid emails.
     """
     valid = []
@@ -484,11 +433,12 @@ def sort_emails_by_validity(self, emails: Iterable[str], dowell_api_key: str) ->
         raise TypeError("Expected emails to be an iterable of strings")
     for email in emails:
         try:
-            if validate_email(email, dowell_api_key):
+            if validate_email(email):
                 valid.append(email)
             else:
                 invalid.append(email)
         except Exception:
             invalid.append(email)
     return valid, invalid
+
 

@@ -43,10 +43,9 @@ INSTALLED_APPS = [
     
 
     # local apps,
-    'api.apps.ApiConfig',
     'linkShortening',
     'APP',
-    'appv1',
+    'APP_V1'
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -62,7 +61,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'website_info.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -80,7 +79,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'website_info.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
