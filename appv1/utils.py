@@ -85,48 +85,38 @@ class WebsiteInfoScraper:
         matches = get_close_matches(host, names, n=len(names)//2 or 1, cutoff=0.3)
         return matches[0] if matches else None
     
-    def scrape_contact_us_page(web_url):
+
+    def scrape_contact_us_page(self, web_url):
         try:
-            # Construct the contact us page URL based on the web URL
-            # contact_us_url = web_url + '/contactus'
-            contact_us_url = web_url + '/contact'
-
-            # Send an HTTP GET request to the contact us page
+            contact_us_url = web_url 
             response = requests.get(contact_us_url)
-
             # Check if the request was successful
             if response.status_code == 200:
                 # Parse the HTML content of the page
                 soup = BeautifulSoup(response.text, 'html.parser')
+                # print(soup.prettify())
+                form_elements = soup.find_all('form')
+                form_data = {}
+                # Loop through the <form> elements and process them as needed
+                if form_elements:
+                    for form in form_elements:
+                        # Extract form-specific information or fields here
+                        form_fields = form.find_all(['input', 'textarea'])
+                        for field in form_fields:
+                            field_name = field.get('name')
+                            field_type = field.get('type')
+                            if field_name or field_type:
+                                form_data[field_name] = field_type
+                            # Check if the field is a textarea
+                            if field.name == 'textarea':
+                                form_data[f"textarea"] = 'textarea'
 
-                # Extract all text content from the page
-                all_text = soup.get_text()
-
-                # Extract all links on the contact us page
-                links = [link.get('href') for link in soup.find_all('a')]
-
-                # Extract all email addresses (simple pattern matching)
-                import re
-                # email_pattern = r'\S+@\S+'
-                # Extract email addresses (simple pattern matching)
-                email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-                email_addresses = re.findall(email_pattern, all_text)
-
-                print(all_text)
-                # Extract phone numbers (simple pattern matching)
-                phone_pattern = r'\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b'
-                phone_numbers = re.findall(phone_pattern, all_text)
-
-                # You can add more specific scraping logic as needed for your website
-
-                # Return all the extracted information
-                return {
-                    # "text_content": all_text,
-                    "links": links,
-                    "email_addresses": email_addresses,
-                    "phone_numbers": phone_numbers,
-                    # Add more fields as needed
-                }
+                    if form_data:
+                        return form_data
+                    else:
+                        return "No Form Fields found on the Contact Us Form."
+                else:
+                    return "Form not found on the Contact Us page."
             else:
                 print(f"Failed to retrieve the contact us page. Status code: {response.status_code}")
                 return None
@@ -134,6 +124,74 @@ class WebsiteInfoScraper:
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             return None
+
+
+
+
+    # def scrape_contact_us_page(self, web_url):
+    #     try:
+    #         # Construct the contact us page URL based on the web URL
+    #         # contact_us_url = web_url + '/contactus'
+    #         # contact_us_url = web_url + '/contact'
+    #         contact_us_url = web_url 
+
+    #         # Send an HTTP GET request to the contact us page
+    #         response = requests.get(contact_us_url)
+
+    #         # Check if the request was successful
+    #         if response.status_code == 200:
+    #             # Parse the HTML content of the page
+    #             soup = BeautifulSoup(response.text, 'html.parser')
+
+    #             # Find the form element on the page (you may need to inspect the page source to get the correct form selector)
+    #             form = soup.find('form')
+    #             if form:
+    #                 print(form)
+    #                 # Extract the name, email, and message fields from the form
+    #                 name_input = form.find('input', {'name': 'name'})
+    #                 email_input = form.find('input', {'name': 'email'})
+    #                 message_textarea = form.find('textarea', {'name': 'message'})
+
+    #                 # Extract the values (if available)
+    #                 name = name_input['value'] if name_input else None
+    #                 email = email_input['value'] if email_input else None
+    #                 message = message_textarea.get_text() if message_textarea else None
+
+    #                 # Extract all text content from the page
+    #                 all_text = soup.get_text()
+
+    #                 # Extract all links on the contact us page
+    #                 # links = [link.get('href') for link in soup.find_all('a')]
+
+    #                 # Extract all email addresses (simple pattern matching)
+
+    #                 # email_pattern = r'\S+@\S+'
+    #                 # Extract email addresses (simple pattern matching)
+    #                 # email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+    #                 # email_addresses = re.findall(email_pattern, all_text)
+
+    #                 # print(all_text)
+    #                 # Extract phone numbers (simple pattern matching)
+    #                 # phone_pattern = r'\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b'
+    #                 # phone_numbers = re.findall(phone_pattern, all_text)
+    #                 return {
+    #                     "name": name,
+    #                     "email": email,
+    #                     "text_area": message,
+    #                     # "links": links,
+    #                     # "email_addresses": email_addresses,
+    #                     # "phone_numbers": phone_numbers,
+    #                     # Add more fields as needed
+    #                 }
+    #             else:
+    #                 print("Form not found on the Contact Us page.")
+    #         else:
+    #             print(f"Failed to retrieve the contact us page. Status code: {response.status_code}")
+    #             return None
+            
+    #     except Exception as e:
+    #         print(f"An error occurred: {str(e)}")
+    #         return None
 
     def find_emails(self):
         """

@@ -22,6 +22,7 @@ urlpatterns = [
     path('', health_check.as_view()),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls'), name="api"),
+    path('appv1/', include('appv1.urls'), name="appv1"),
     path('api/v1/', include('APP.urls')),
     path('api/qrcode/v1/', include('linkShortening.urls')),
 ]

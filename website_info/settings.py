@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'linkShortening',
     'APP',
+    'appv1',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
