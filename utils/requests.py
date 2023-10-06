@@ -2,7 +2,8 @@ from typing import Dict
 from django.core.exceptions import ValidationError
 from django.http.response import JsonResponse
 
-from utils.scraper import WebsiteInfoScraper, sort_emails_by_validity
+from utils.scraper import WebsiteInfoScraper
+from utils.helper import sort_emails_by_validity
 from utils.validators import WebsiteInfoRequestBodyValidator
 from utils.misc import info_request_smc, INFO_REQUEST_FORMAT
 
