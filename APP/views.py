@@ -44,7 +44,7 @@ website_info_extraction_api_view = WebsiteInfoExtractionAPIView.as_view()
 
 class ContactUsAPI(generics.GenericAPIView):
     serializer_class = ContactInfoRequestSerializer
-
+    queryset = []
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -52,6 +52,8 @@ class ContactUsAPI(generics.GenericAPIView):
             # validated_data = serializer.validated_data
             web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
             response_dict = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
+
+            print(response_dict)
 
             # if response_dict:
             return Response(response_dict, status=status.HTTP_200_OK)
