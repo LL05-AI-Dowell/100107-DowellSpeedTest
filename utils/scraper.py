@@ -418,47 +418,4 @@ class WebsiteInfoScraper:
             self.browser.quit()
 
         
-    def scrape_contact_us_pager(self, web_url):
-        try:
-            contact_us_url = web_url 
-            response = requests.get(contact_us_url)
-            # Check if the request was successful
-            if response.status_code == 200:
-                # Parse the HTML content of the page
-                soup = BeautifulSoup(response.text, 'html.parser')
- 
-                # html_str = soup.prettify()
-                # with open("soup.html", "w", encoding="utf-8") as file:
-                #     file.write(html_str)
-                    
-                form_elements = soup.find_all('form')
-                # print(form_elements)
-                form_data = {}
-                # Loop through the <form> elements and process them as needed
-                if form_elements:
-                    for form in form_elements:
-                        # Extract form-specific information or fields here
-                        form_fields = form.find_all(['input', 'textarea'])
-                        for field in form_fields:
-                            field_name = field.get('name')
-                            field_type = field.get('type')
-                            field_id = field.get('id')
-                            if field_name or field_type:
-                                form_data[field_name] = field_type
-                            # Check if the field is a textarea
-                            if field.name == 'textarea':
-                                form_data[f"textarea"] = 'textarea'
-
-                    if form_data:
-                        return form_data
-                    else:
-                        return "No Form Fields found on the Contact Us Form."
-                else:
-                    return "Form not found on the Contact Us page"
-            else:
-                print(f"Failed to retrieve the contact us page. Status code: {response.status_code}")
-                return None
-            
-        except Exception as e:
-            print(f"An error occurred: {str(e)}")
-            return None
+    
