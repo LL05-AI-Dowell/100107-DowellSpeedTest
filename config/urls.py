@@ -23,5 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('APP.urls'), name="api"),
     path('api/v1/', include('APP_V1.urls')),
-    path('api/qrcode/v1/', include('linkShortening.urls')),
+    path('', include('linkShortening.urls')),
 ]

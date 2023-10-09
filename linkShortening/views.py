@@ -108,8 +108,6 @@ class Links(APIView):
             
             # Check if there are any active links
             active_links = [link for link in response["data"] if link["is_active"]]
-
-            print("Active Links", active_links)
             
             if len(active_links) > 0:
 
@@ -119,12 +117,12 @@ class Links(APIView):
                 # Update the "is_opened" status to True
                 field = {"link_id": open_link["link_id"]}
                 dowellconnection(*qrcode_management,"update",field, update_field)
-
+                return redirect(open_link["link"])
                 # Redirect to the open link and pass link_id to link
-                if has_query_params(open_link["link"]):
-                    return redirect(open_link["link"] + "&link_id=" + open_link["link_id"])
-                else:
-                    return redirect(open_link["link"] + "?link_id=" + open_link["link_id"])
+                # if has_query_params(open_link["link"]):
+                #     return redirect(open_link["link"] + "&link_id=" + open_link["link_id"])
+                # else:
+                #     return redirect(open_link["link"] + "?link_id=" + open_link["link_id"])
                     
             else:
                 # Check if there are any inactive links
