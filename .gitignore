@@ -261,7 +261,7 @@ poetry.toml
 
 # ruff
 .ruff_cache/
-
+soup.html
 # LSP config files
 pyrightconfig.json
 .zenv

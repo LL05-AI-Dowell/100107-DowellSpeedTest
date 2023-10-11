@@ -388,9 +388,9 @@ class WebsiteInfoScraper:
             soup = self.get_page(web_url)
 
             # for debugging purposes
-            html_str = soup.prettify()
-            with open("soup.html", "w", encoding="utf-8") as file:
-                file.write(html_str)
+            # html_str = soup.prettify()
+            # with open("soup.html", "w", encoding="utf-8") as file:
+            #     file.write(html_str)
                 
             form_elements = soup.find_all('form')
 
