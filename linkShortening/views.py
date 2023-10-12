@@ -249,7 +249,8 @@ class codeqr(APIView):
         response = dowellconnection(*qrcode_management, "fetch", field, {})
         res = json.loads(response)
         if len(res["data"]):
-            return Response({"response": res}, status=status.HTTP_200_OK)
+            reversed_data = res["data"][::-1]
+            return Response({"response": reversed_data}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "No qrcodes found"}, status=404)
 
