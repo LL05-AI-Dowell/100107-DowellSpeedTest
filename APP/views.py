@@ -1,15 +1,16 @@
 from rest_framework import generics, status, decorators
 from rest_framework.response import Response
-from .serializers import ContactInfoRequestSerializer, WebsiteInfoRequestSerializer
-from django.http import JsonResponse
+from rest_framework.decorators import api_view
+
+
+from .serializers import ContactInfoRequestSerializer, SubmitFormSerializer, WebsiteInfoRequestSerializer
 from django.views.decorators.csrf import csrf_exempt
-from selenium import webdriver
+
+
 from utils.scraper import WebsiteInfoScraper
 from utils.requests import WebsiteInfoRequest
 from utils.misc import INFO_REQUEST_FORMAT
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-import json
+
 
 
 class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
@@ -70,45 +71,20 @@ contact_us_api_view = ContactUsAPI.as_view()
 
 
 @csrf_exempt
+@api_view(['POST'])
 def submit_contact_form(request):
-    if request.method == 'POST':
-        try:
-            request_data = json.loads(request.body.decode('utf-8'))
-            contact_us_link = request_data.get("contact_us_link")
-            first_name = request_data.get("first-name")
-            last_name = request_data.get("last-name")
-            email = request_data.get("email")
-            message = request_data.get("textarea_comp-laapwo6d")
-            # Initialize Chrome WebDriver in headless mode
-            chrome_options = Options()
-            # chrome_options.add_argument("--headless")  # Run in headless mode
-            chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
-            chrome_options.add_argument("--disable-blink-features=AutomationControlled") 
-            chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"]) 
-            chrome_options.add_experimental_option("useAutomationExtension", False) 
-            # if browser.lower() == "chrome":
-            # Add similar blocks for other browsers (e.g., Firefox, Edge) if needed
-            driver = webdriver.Chrome(options=chrome_options)
-            # chrome_options = Options()
-            # chrome_options.add_argument("--headless")
-            # driver = webdriver.Chrome(options=chrome_options)
-            # Open the contact_us_link
-            driver.get(contact_us_link)
-            # Fill in the form fields
-            driver.find_element(By.NAME, "first-name").send_keys(first_name)
-            driver.find_element(By.NAME, "last-name").send_keys(last_name)
-            driver.find_element(By.NAME, "email").send_keys(email)
-            driver.find_element(By.ID , "textarea_comp-laapwo6d").send_keys(message)
-            # Submit the form (replace 'submit_button_name' with the actual button name)
-            # driver.find_element(By.NAME, "submit_button_name").click()
-            driver.find_element(By.CLASS_NAME, "wixui-button").click()
-            # Optionally, you can wait for some time for the response page to load
-            driver.implicitly_wait(5)
-            # Get the response status code
-            response_code = driver.execute_script("return document.readyState")
-            # Close the WebDriver
-            driver.quit()
-            return JsonResponse({"status_code": response_code}, status=200)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
-    return JsonResponse({"error": "Invalid request method."}, status=400)
+    try:
+        contact_us_link = request.data.get("page_link")
+        form_data = request.data.get("form_data")
+
+        # initialize scraper
+        serializer = SubmitFormSerializer(data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+            scraper = WebsiteInfoScraper()
+            response_data = scraper.submit_contact_form_selenium(contact_us_link, form_data)
+            return Response({"success": response_data}, status=200)
+        return Response(serializer.errors)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)

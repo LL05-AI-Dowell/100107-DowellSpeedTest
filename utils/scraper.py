@@ -1,3 +1,4 @@
+import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -25,7 +26,7 @@ class WebsiteInfoScraper:
 
     engine = BS4WebScraper(log_to_console=False)
 
-    def __init__(self, web_url: str, max_search_depth: int = 0, engine: BS4WebScraper = None, browser = None):
+    def __init__(self, web_url: str = None, max_search_depth: int = 0, engine: BS4WebScraper = None, browser = None):
         """
         Initializes a WebsiteInfoScraper object.
 
@@ -48,7 +49,7 @@ class WebsiteInfoScraper:
         
         self.browserProfile = Options()
         
-        self.browserProfile.add_argument("--headless")  # Run in headless mode
+        # self.browserProfile.add_argument("--headless")  # Run in headless mode
         self.browserProfile.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
         self.browserProfile.add_argument("--disable-blink-features=AutomationControlled") 
         self.browserProfile.add_experimental_option("excludeSwitches", ["enable-automation"]) 
@@ -379,18 +380,15 @@ class WebsiteInfoScraper:
 
         return form_data
     
-    # if field.name == 'textarea':
-    #     form_data[f"textarea"] = 'textarea'
-    
 
     def scrape_contact_us_page(self, web_url):
         try:
             soup = self.get_page(web_url)
 
             # for debugging purposes
-            # html_str = soup.prettify()
-            # with open("soup.html", "w", encoding="utf-8") as file:
-            #     file.write(html_str)
+            html_str = soup.prettify()
+            with open("soup.html", "w", encoding="utf-8") as file:
+                file.write(html_str)
                 
             form_elements = soup.find_all('form')
 
@@ -418,4 +416,64 @@ class WebsiteInfoScraper:
             self.browser.quit()
 
         
-    
+    def submit_contact_form_selenium(self, contact_us_link, form_data_list):
+        try:
+            # Open the contact_us_link
+            self.browser.get(contact_us_link)
+
+            # response_data = []
+
+            for form_data in form_data_list:
+
+                for field_name, value in form_data.items():
+                    # field_value = form_data[field_name]
+                    time.sleep(3)
+                    # find input fields by name
+                    try:
+                        input_field = self.browser.find_element(By.NAME, field_name)
+                        input_field.send_keys(value)
+                    except:
+                        input_id = self.browser.find_element(By.ID, field_name)
+                        input_id.send_keys(value)
+
+                    # if input_field:
+                    #     input_field.send_keys(value)
+                    # else:
+                    #     input_id.send_keys(value)
+
+                    # if input_field and input_id:
+                    #     input_field.send_keys(value)
+                    # elif input_field:
+                    #     input_field.send_keys(value)
+                    # else:
+                    #     input_id.send_keys(value)
+                    # if field_type == "text":
+                    #     self.browser.find_element(By.NAME, field_name).send_keys(field_value)
+                    # elif field_type == "email":
+                    #     self.browser.find_element(By.NAME, field_name).send_keys(field_value)
+                    # elif field_type == "tel":
+                    #     self.browser.find_element(By.NAME, field_name).send_keys(field_value)
+                    # elif field_type == "textarea":
+                    #     self.browser.find_element(By.ID, field_name).send_keys(field_value)
+                    # Add more conditions for other field types if needed
+
+                # Submit the form
+                try:
+                    # submit_button = WebDriverWait(self.browser, 10).until(
+                    #     EC.element_to_be_clickable((By.CLASS_NAME, "wixui-button"))
+                    # )
+                    # submit_button.click()
+                    response_code = "Form submitted successfully."
+                    return response_code
+                except Exception as e:
+                    response_code = f"Error submitting form: {str(e)}"
+                    return response_code
+
+                # response_data.append({"status_code": response_code})
+            # Close the WebDriver
+            time.sleep(3)
+            self.browser.quit()
+
+            # return response_data
+        except Exception as e:
+            return {"error": str(e)}
