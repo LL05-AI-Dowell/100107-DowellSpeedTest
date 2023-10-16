@@ -376,7 +376,7 @@ class WebsiteInfoScraper:
             elif field_id and not field_name:
                 form_data[field_id] = field_type
             else:
-                form_data[field_name] = field_type
+                form_data[field_type] = field_type
 
         return form_data
     
@@ -420,42 +420,51 @@ class WebsiteInfoScraper:
         try:
             # Open the contact_us_link
             self.browser.get(contact_us_link)
+            WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
 
-            # response_data = []
+            # Find all form elements on the page
+            form_elements = self.browser.find_elements(By.TAG_NAME, 'form')
 
-            for form_data in form_data_list:
+            response_data = []
 
-                for field_name, value in form_data.items():
-                    # field_value = form_data[field_name]
-                    time.sleep(3)
-                    # find input fields by name
-                    try:
-                        input_field = self.browser.find_element(By.NAME, field_name)
-                        input_field.send_keys(value)
-                    except:
-                        input_id = self.browser.find_element(By.ID, field_name)
-                        input_id.send_keys(value)
+            # Iterate over each form
+            for i, form in enumerate(form_elements):
+    
+                if i <= len(form_data_list):
+                    form_data = form_data_list[i]
 
-                    # if input_field:
-                    #     input_field.send_keys(value)
-                    # else:
-                    #     input_id.send_keys(value)
+                    # for form_data in form_data_list:
+                    for field_name, value in form_data.items():
+                        # field_value = form_data[field_name]
+                        time.sleep(3)
+                        # find input fields by name
+                        try:
+                            input_field = form.find_element(By.NAME, field_name)
+                            input_field.send_keys(value)
+                        except:
+                            input_field = form.find_element(By.ID, field_name)
+                            input_field.send_keys(value)
 
-                    # if input_field and input_id:
-                    #     input_field.send_keys(value)
-                    # elif input_field:
-                    #     input_field.send_keys(value)
-                    # else:
-                    #     input_id.send_keys(value)
-                    # if field_type == "text":
-                    #     self.browser.find_element(By.NAME, field_name).send_keys(field_value)
-                    # elif field_type == "email":
-                    #     self.browser.find_element(By.NAME, field_name).send_keys(field_value)
-                    # elif field_type == "tel":
-                    #     self.browser.find_element(By.NAME, field_name).send_keys(field_value)
-                    # elif field_type == "textarea":
-                    #     self.browser.find_element(By.ID, field_name).send_keys(field_value)
-                    # Add more conditions for other field types if needed
+                        # if input_field:
+                        #     input_field.send_keys(value)
+                        # else:
+                        #     input_id.send_keys(value)
+
+                        # if input_field and input_id:
+                        #     input_field.send_keys(value)
+                        # elif input_field:
+                        #     input_field.send_keys(value)
+                        # else:
+                        #     input_id.send_keys(value)
+                        # if field_type == "text":
+                        #     self.browser.find_element(By.NAME, field_name).send_keys(field_value)
+                        # elif field_type == "email":
+                        #     self.browser.find_element(By.NAME, field_name).send_keys(field_value)
+                        # elif field_type == "tel":
+                        #     self.browser.find_element(By.NAME, field_name).send_keys(field_value)
+                        # elif field_type == "textarea":
+                        #     self.browser.find_element(By.ID, field_name).send_keys(field_value)
+                        # Add more conditions for other field types if needed
 
                 # Submit the form
                 try:
@@ -463,17 +472,23 @@ class WebsiteInfoScraper:
                     #     EC.element_to_be_clickable((By.CLASS_NAME, "wixui-button"))
                     # )
                     # submit_button.click()
-                    response_code = "Form submitted successfully."
-                    return response_code
+                    # submit_button = form.find_element(By.TYPE, "submit")
+                    # submit_button.click()
+                    form.submit()
+
+                    time.sleep(3)
+
+                    response = f"Form {i + 1} submitted successfully."
+                    response_data.append(response)
                 except Exception as e:
-                    response_code = f"Error submitting form: {str(e)}"
-                    return response_code
+                    response = f"Error submitting form {i + 1}: {str(e)}"
+                    response_data.append({"error": response})
 
-                # response_data.append({"status_code": response_code})
-            # Close the WebDriver
-            time.sleep(3)
-            self.browser.quit()
+                # Close the WebDriver
+                time.sleep(3)
+                self.browser.quit()
 
-            # return response_data
+            return response_data
         except Exception as e:
-            return {"error": str(e)}
+            # return {"error": str(e)}
+            raise Exception(e)
