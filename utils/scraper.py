@@ -18,6 +18,9 @@ from typing import Iterable, List, Dict
 
 from .misc import SOCIAL_PLATFORMS, common_address_components
 
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.os_manager import ChromeType
 
 class WebsiteInfoScraper:
     """
@@ -60,7 +63,11 @@ class WebsiteInfoScraper:
 
         # if browser.lower() == "chrome":
         # Add similar blocks for other browsers (e.g., Firefox, Edge) if needed
-        self.browser = webdriver.Chrome(options=self.browserProfile)  # Replace with the path to your Chrome WebDriver
+        self.browser = webdriver.Chrome(
+            service=ChromeService(ChromeDriverManager().install()),
+            # service=ChromeService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()), 
+            options=self.browserProfile
+        ) 
         
         
         # else:
