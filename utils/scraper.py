@@ -435,8 +435,7 @@ class WebsiteInfoScraper:
 
                     # for form_data in form_data_list:
                     for field_name, value in form_data.items():
-                        # field_value = form_data[field_name]
-                        time.sleep(3)
+
                         # find input fields by name
                         try:
                             input_field = form.find_element(By.NAME, field_name)
@@ -445,39 +444,10 @@ class WebsiteInfoScraper:
                             input_field = form.find_element(By.ID, field_name)
                             input_field.send_keys(value)
 
-                        # if input_field:
-                        #     input_field.send_keys(value)
-                        # else:
-                        #     input_id.send_keys(value)
-
-                        # if input_field and input_id:
-                        #     input_field.send_keys(value)
-                        # elif input_field:
-                        #     input_field.send_keys(value)
-                        # else:
-                        #     input_id.send_keys(value)
-                        # if field_type == "text":
-                        #     self.browser.find_element(By.NAME, field_name).send_keys(field_value)
-                        # elif field_type == "email":
-                        #     self.browser.find_element(By.NAME, field_name).send_keys(field_value)
-                        # elif field_type == "tel":
-                        #     self.browser.find_element(By.NAME, field_name).send_keys(field_value)
-                        # elif field_type == "textarea":
-                        #     self.browser.find_element(By.ID, field_name).send_keys(field_value)
-                        # Add more conditions for other field types if needed
 
                 # Submit the form
                 try:
-                    # submit_button = WebDriverWait(self.browser, 10).until(
-                    #     EC.element_to_be_clickable((By.CLASS_NAME, "wixui-button"))
-                    # )
-                    # submit_button.click()
-                    # submit_button = form.find_element(By.TYPE, "submit")
-                    # submit_button.click()
                     form.submit()
-
-                    time.sleep(3)
-
                     response = f"Form {i + 1} submitted successfully."
                     response_data.append(response)
                 except Exception as e:
@@ -485,10 +455,8 @@ class WebsiteInfoScraper:
                     response_data.append({"error": response})
 
                 # Close the WebDriver
-                time.sleep(3)
                 self.browser.quit()
 
             return response_data
         except Exception as e:
-            # return {"error": str(e)}
             raise Exception(e)

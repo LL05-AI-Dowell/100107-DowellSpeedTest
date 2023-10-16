@@ -65,8 +65,6 @@ class ContactUsAPI(generics.GenericAPIView):
             # return Response("Error" , status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-contact_us_api_view = ContactUsAPI.as_view()
-
 
 
 
