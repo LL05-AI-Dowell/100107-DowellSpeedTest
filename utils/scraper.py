@@ -49,8 +49,8 @@ class WebsiteInfoScraper:
         
         self.browserProfile = webdriver.ChromeOptions()
         
-        self.browserProfile.add_argument("--headless")  # Run in headless mode
         self.browserProfile.add_argument("--no-sandbox")
+        self.browserProfile.add_argument("--headless")  # Run in headless mode
         self.browserProfile.add_argument("--disable-gpu")
         # self.browserProfile.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
         # self.browserProfile.add_argument("--disable-blink-features=AutomationControlled") 
