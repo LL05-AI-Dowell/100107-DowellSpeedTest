@@ -50,14 +50,19 @@ class WebsiteInfoScraper:
         self.browserProfile = Options()
         
         self.browserProfile.add_argument("--headless")  # Run in headless mode
-        self.browserProfile.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
-        self.browserProfile.add_argument("--disable-blink-features=AutomationControlled") 
-        self.browserProfile.add_experimental_option("excludeSwitches", ["enable-automation"]) 
-        self.browserProfile.add_experimental_option("useAutomationExtension", False) 
+        self.browserProfile.add_argument("--no-sandbox")
+        self.browserProfile.add_argument("--disable-gpu")
+        # self.browserProfile.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
+        # self.browserProfile.add_argument("--disable-blink-features=AutomationControlled") 
+        # self.browserProfile.add_experimental_option("excludeSwitches", ["enable-automation"]) 
+        # self.browserProfile.add_experimental_option("useAutomationExtension", False) 
+        
 
         # if browser.lower() == "chrome":
         # Add similar blocks for other browsers (e.g., Firefox, Edge) if needed
         self.browser = webdriver.Chrome(options=self.browserProfile)  # Replace with the path to your Chrome WebDriver
+        
+        
         # else:
         #     self.browser = webdriver.Firefox
         
