@@ -1,4 +1,11 @@
-import json
+import time
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+
 import re
 from bs4 import BeautifulSoup
 from bs4_web_scraper.scraper import BS4WebScraper
@@ -19,7 +26,7 @@ class WebsiteInfoScraper:
 
     engine = BS4WebScraper(log_to_console=False)
 
-    def __init__(self, web_url: str, max_search_depth: int = 0, engine: BS4WebScraper = None):
+    def __init__(self, web_url: str = None, max_search_depth: int = 0, engine: BS4WebScraper = None, browser = None):
         """
         Initializes a WebsiteInfoScraper object.
 
@@ -37,6 +44,23 @@ class WebsiteInfoScraper:
         self.target = web_url
         self.engine = engine if engine else self.engine
         self.maximum_search_depth = max_search_depth
+
+        
+        
+        self.browserProfile = Options()
+        
+        # self.browserProfile.add_argument("--headless")  # Run in headless mode
+        self.browserProfile.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
+        self.browserProfile.add_argument("--disable-blink-features=AutomationControlled") 
+        self.browserProfile.add_experimental_option("excludeSwitches", ["enable-automation"]) 
+        self.browserProfile.add_experimental_option("useAutomationExtension", False) 
+
+        # if browser.lower() == "chrome":
+        # Add similar blocks for other browsers (e.g., Firefox, Edge) if needed
+        self.browser = webdriver.Chrome(options=self.browserProfile)  # Replace with the path to your Chrome WebDriver
+        # else:
+        #     self.browser = webdriver.Firefox
+        
 
 
     def find_website_name(self) -> str | None:
@@ -325,49 +349,114 @@ class WebsiteInfoScraper:
                     break
         return addresses or None
     
+    def get_page(self, web_url):
+        self.browser.get(web_url)
+        # Wait for the page to load (you can adjust the timeout as needed)
+        WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
+
+        # Parse the HTML content of the page
+        soup = BeautifulSoup(self.browser.page_source, 'html.parser')
+        return soup
+    
+    def extract_form_data(self, form):
+        form_data = {}
+        form_fields = form.find_all(['input', 'textarea'])
+
+        for field in form_fields:
+            field_name = field.get('name')
+            field_type = field.get('type')
+            field_id = field.get('id')
+
+            if field_name and field_type:
+                form_data[field_name] = field_type
+            elif field.name == 'textarea' and field_name:
+                form_data[field_name] = 'textarea'
+            elif field.name == 'textarea' and field_id:
+                form_data[field_id] = 'textarea'
+            elif field_id and not field_name:
+                form_data[field_id] = field_type
+            else:
+                form_data[field_type] = field_type
+
+        return form_data
+    
+
     def scrape_contact_us_page(self, web_url):
         try:
-            contact_us_url = web_url 
-            response = requests.get(contact_us_url)
-            # Check if the request was successful
-            if response.status_code == 200:
-                # Parse the HTML content of the page
-                soup = BeautifulSoup(response.text, 'html.parser')
- 
-                # html_str = soup.prettify()
-                # with open("soup.html", "w", encoding="utf-8") as file:
-                #     file.write(html_str)
-                    
-                form_elements = soup.find_all('form')
-                # print(form_elements)
-                form_data = {}
-                # Loop through the <form> elements and process them as needed
-                if form_elements:
-                    for form in form_elements:
-                        # Extract form-specific information or fields here
-                        form_fields = form.find_all(['input', 'textarea'])
-                        for field in form_fields:
-                            field_name = field.get('name')
-                            field_type = field.get('type')
-                            if field_name or field_type:
-                                form_data[field_name] = field_type
-                            # Check if the field is a textarea
-                            if field.name == 'textarea':
-                                form_data[f"textarea"] = 'textarea'
+            soup = self.get_page(web_url)
 
-                    if form_data:
-                        return form_data
-                    else:
-                        return "No Form Fields found on the Contact Us Form."
+            # for debugging purposes
+            html_str = soup.prettify()
+            with open("soup.html", "w", encoding="utf-8") as file:
+                file.write(html_str)
+                
+            form_elements = soup.find_all('form')
+
+            # If there's only one form, return a single dictionary
+            if len(form_elements) == 1:
+                form_data = self.extract_form_data(form_elements[0])
+                if form_data:
+                    return form_data
                 else:
-                    return "Form not found on the Contact Us page"
+                    return "No Form Fields found on the Contact Us Form."
+                
+            # If there are multiple forms, return a list of forms
+            elif len(form_elements) > 1:
+                form_data_list = [self.extract_form_data(form) for form in form_elements]
+                if form_data_list:
+                    return form_data_list
+                else:
+                    return "No Form Fields found on the Contact Us Forms."
             else:
-                print(f"Failed to retrieve the contact us page. Status code: {response.status_code}")
-                return None
-            
+                return "Form(s) not found on the Contact Us page"
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             return None
+        finally:
+            self.browser.quit()
+
+        
+    def submit_contact_form_selenium(self, contact_us_link, form_data_list):
+        try:
+            # Open the contact_us_link
+            self.browser.get(contact_us_link)
+            WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
+
+            # Find all form elements on the page
+            form_elements = self.browser.find_elements(By.TAG_NAME, 'form')
+
+            response_data = []
+
+            # Iterate over each form
+            for i, form in enumerate(form_elements):
+    
+                if i <= len(form_data_list):
+                    form_data = form_data_list[i]
+
+                    # for form_data in form_data_list:
+                    for field_name, value in form_data.items():
+
+                        # find input fields by name
+                        try:
+                            input_field = form.find_element(By.NAME, field_name)
+                            input_field.send_keys(value)
+                        except:
+                            input_field = form.find_element(By.ID, field_name)
+                            input_field.send_keys(value)
 
 
+                # Submit the form
+                try:
+                    form.submit()
+                    response = f"Form {i + 1} submitted successfully."
+                    response_data.append(response)
+                except Exception as e:
+                    response = f"Error submitting form {i + 1}: {str(e)}"
+                    response_data.append({"error": response})
 
+                # Close the WebDriver
+                self.browser.quit()
+
+            return response_data
+        except Exception as e:
+            raise Exception(e)

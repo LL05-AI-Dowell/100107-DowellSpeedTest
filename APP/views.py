@@ -1,11 +1,16 @@
 from rest_framework import generics, status, decorators
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
-from .serializers import ContactInfoRequestSerializer, WebsiteInfoRequestSerializer
+
+from .serializers import ContactInfoRequestSerializer, SubmitFormSerializer, WebsiteInfoRequestSerializer
+from django.views.decorators.csrf import csrf_exempt
+
 
 from utils.scraper import WebsiteInfoScraper
 from utils.requests import WebsiteInfoRequest
 from utils.misc import INFO_REQUEST_FORMAT
+
 
 
 class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
@@ -44,7 +49,7 @@ website_info_extraction_api_view = WebsiteInfoExtractionAPIView.as_view()
 
 class ContactUsAPI(generics.GenericAPIView):
     serializer_class = ContactInfoRequestSerializer
-
+    queryset = []
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -53,9 +58,31 @@ class ContactUsAPI(generics.GenericAPIView):
             web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
             response_dict = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
 
+            # print(response_dict)
+
             # if response_dict:
             return Response(response_dict, status=status.HTTP_200_OK)
             # return Response("Error" , status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-contact_us_api_view = ContactUsAPI.as_view()
+
+
+
+@csrf_exempt
+@api_view(['POST'])
+def submit_contact_form(request):
+    try:
+        contact_us_link = request.data.get("page_link")
+        form_data = request.data.get("form_data")
+
+        # initialize scraper
+        serializer = SubmitFormSerializer(data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+            scraper = WebsiteInfoScraper()
+            response_data = scraper.submit_contact_form_selenium(contact_us_link, form_data)
+            return Response({"success": response_data}, status=200)
+        return Response(serializer.errors)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)

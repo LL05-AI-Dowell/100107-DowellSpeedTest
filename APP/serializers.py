@@ -26,3 +26,8 @@ class WebsiteInfoRequestSerializer(serializers.Serializer):
 
 class ContactInfoRequestSerializer(serializers.Serializer):
     contact_us_url = serializers.URLField(validators=[URLValidator], required=True)
+
+
+class SubmitFormSerializer(serializers.Serializer):
+    page_link = serializers.URLField()
+    form_data = serializers.ListField()
