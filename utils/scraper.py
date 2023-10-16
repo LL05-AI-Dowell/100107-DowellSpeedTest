@@ -49,7 +49,7 @@ class WebsiteInfoScraper:
         
         self.browserProfile = Options()
         
-        # self.browserProfile.add_argument("--headless")  # Run in headless mode
+        self.browserProfile.add_argument("--headless")  # Run in headless mode
         self.browserProfile.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
         self.browserProfile.add_argument("--disable-blink-features=AutomationControlled") 
         self.browserProfile.add_experimental_option("excludeSwitches", ["enable-automation"]) 

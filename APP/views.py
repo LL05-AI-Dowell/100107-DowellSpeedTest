@@ -53,7 +53,7 @@ class ContactUsAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            contact_us_url = serializer.data.get("contact_us_url")
+            contact_us_url = serializer.data.get("page_link")
             # validated_data = serializer.validated_data
             web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
             response_dict = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
