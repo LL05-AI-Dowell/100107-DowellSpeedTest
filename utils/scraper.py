@@ -47,7 +47,7 @@ class WebsiteInfoScraper:
 
         
         
-        self.browserProfile = Options()
+        self.browserProfile = webdriver.ChromeOptions()
         
         self.browserProfile.add_argument("--headless")  # Run in headless mode
         self.browserProfile.add_argument("--no-sandbox")
