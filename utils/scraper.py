@@ -64,7 +64,7 @@ class WebsiteInfoScraper:
         # if browser.lower() == "chrome":
         # Add similar blocks for other browsers (e.g., Firefox, Edge) if needed
         self.browser = webdriver.Chrome(
-            service=ChromeService(ChromeDriverManager().install()),
+            # service=ChromeService(ChromeDriverManager().install()),
             # service=ChromeService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()), 
             options=self.browserProfile
         ) 
