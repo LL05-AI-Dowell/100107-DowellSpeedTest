@@ -51,3 +51,14 @@ pip install -r requirements.txt
 python3 manage.py runserver
 
 ## API Documentation 
+
+
+
+| HTTP Verbs | Endpoints                      | Action                                               |
+|------------|--------------------------------|------------------------------------------------------|
+| POST       | api/website-info-extractor/   | To get meta_data by passing the web url          |
+| POST       | api/v1/website-info-extractor/| To Get verified and unverifed emails Generated.                     |
+| POST       | api/v1/contact-us-extractor/  | To retrieve the conctact-us-page
+ Created     |
+| POST       | api/v1/submit-contact-form/   | To Send data to contact-us-page 
+ |
