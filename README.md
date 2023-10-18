@@ -121,7 +121,7 @@ Request Body
 Note:
 
 This endpoint is used to extract infomation of the given url and return a response
-if the response is 200
+if the response is 200 .This does not mandate implementation of api-key
 
 Response - 200 
 
@@ -206,8 +206,157 @@ Response - 200
     ],
     "website_social_handles": null,
     "website_url": "https://www.sstream.co.ke"
+    }
 ```
 
+POST: `/api/v1/website-info-extractor/`
+
+Request Body
+
+```json
+{
+    "web_url": "https://www.sstream.co.ke/",
+    "api_key": "2455e5e-9utewwq5r776-yree",
+    "info_request": {
+        "addresses": true,
+        "emails": true,
+        "links": true,
+        "logos": true,
+        "name": true,
+        "pages_url": [
+            "about",
+            "contact",
+            "careers",
+            "services",
+            "products"
+        ],
+        "phone_numbers": true,
+        "social_media_links": {
+            "all": true,
+            "choices": [
+                "facebook",
+                "twitter",
+                "instagram",
+                "linkedin",
+                "youtube",
+                "pinterest",
+                "tumblr",
+                "snapchat"
+            ]
+        },
+        "website_socials": {
+            "all": true,
+            "choices": [
+                "facebook",
+                "twitter",
+                "instagram",
+                "linkedin",
+                "youtube",
+                "pinterest",
+                "tumblr",
+                "snapchat"
+            ]
+        }
+    }
+}
+```
+Note:
+
+This endpoint is used to extract infomation of the given url and api-key and return a response
+if the response is 200 .This does prompt mandate implementation of api-key
+
+Response - 200 
+
+```json
+    {
+    "success": true,
+    "message": "The information was successfully extracted",
+    "data": {
+        "meta_data": {
+            "addresses": null,
+            "emails": [
+                "hello@sstream.co"
+            ],
+            "links": [
+                "https:///twitter.com/SstreamK",
+                "https:///www.sstream.co.ke/blog",
+                "https:///www.sstream.co.ke/contact",
+                "https:///www.sstream.co.ke/shop",
+                "https:///www.sstream.co.ke/about-1",
+                "http:///www.facebook.com/sstreamke",
+                "https:///www.linkedin.com/in/sstreamkenya",
+                "https:///www.sstream.co.ke/events-1",
+                "https:///www.sstream.co.ke/privacy",
+                "https:///www.sstream.co.ke",
+                "http:///instagram.com/sstream.ke",
+                "https:///www.tiktok.com/@sstreamke",
+                "mailto:///hello@sstream.co.ke"
+            ],
+            "logos": [
+                "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_32%2Ch_32%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png",
+                "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_180%2Ch_180%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png",
+                "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png"
+            ],
+            "name": "Sstream",
+            "pages_url": {
+                "about": "https:///www.sstream.co.ke/about-1",
+                "contact": "https:///www.sstream.co.ke/contact",
+                "careers": null,
+                "services": "https://www.sstream.co.ke/events-1",
+                "products": null
+            },
+            "phone_numbers": [],
+            "social_media_links": {
+                "facebook": [
+                    "http:///www.facebook.com/sstreamke"
+                ],
+                "twitter": [
+                    "https:///twitter.com/SstreamK"
+                ],
+                "instagram": [
+                    "http:///instagram.com/sstream.ke"
+                ],
+                "linkedin": [
+                    "https:///www.linkedin.com/in/sstreamkenya"
+                ],
+                "youtube": null,
+                "reddit": null,
+                "snapchat": null,
+                "whatsapp": null,
+                "telegram": null,
+                "wechat": null,
+                "tiktok": [
+                    "https:///www.tiktok.com/@sstreamke"
+                ],
+                "soundcloud": null,
+                "spotify": null,
+                "medium": null,
+                "quora": null,
+                "twitch": null
+            },
+            "website_socials": null
+        },
+        "company_name": "Sstream",
+        "phone_numbers": [],
+        "addresses": null,
+        "emails_found": [
+            "hello@sstream.co"
+        ],
+        "verified_emails": [],
+        "unverified_emails": [
+            "hello@sstream.co"
+        ],
+        "logos": [
+            "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_32%2Ch_32%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png",
+            "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_180%2Ch_180%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png",
+            "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png"
+        ],
+        "website_social_handles": null,
+        "website_url": "https://www.sstream.co.ke"
+    },
+    "credits": 60
+}
+```
 
 
 
