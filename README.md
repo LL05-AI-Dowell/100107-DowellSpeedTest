@@ -359,6 +359,63 @@ Response - 200
 ```
 
 
+POST: `/api/contact-us-extractor/`
+
+Request body
+
+```json
+    {
+        "page_link": "https://www.sstream.co.ke"
+    }
+```
+
+Note:
+This endpoint api is used to extract contact-us-api of the page_link provided
+
+Response - 200
+
+```json
+    {
+    "name": "text",
+    "email": "email",
+    "subject": "text",
+    "message": "textarea",
+    "submit": "submit"
+}
+```
+
+POST: `/api/submit-contact-form/`
+
+Request body
+
+```json
+    {
+    "contact_us_link": "https://preview.colorlib.com/theme/bootstrap/contact-form-01/",
+    "form_data": {
+        "name": "Yugene",
+        "email": "eugene@email.com",
+        "subject": "Your Subject",
+        "message": "Your Message",
+        "null": "submit"
+    }
+}
+```
+
+Note:
+This endpoint api is used to POST data to the contact us page of the given url
+
+
+Response - 200
+
+```json
+   {
+    "success": [
+        "Form 1 submitted successfully."
+    ]
+}
+```
+
+
 
 ### Technologies Used
 
