@@ -31,7 +31,7 @@ Before you begin, make sure you have the following software installed on your co
 ## Step 1: Setting up the Django project in your local machine.
     
 Clone project by running the following command in your terminal:
-git clone `https://github.com/LL06-Reports-Analysis-Dowell/100056-DowellQRCodeGenertor2.0.git`
+git clone `https://github.com/LL05-AI-Dowell/100107-DowellEmailExtractor.git`
 
 ## Step 2: Run the Project in your local environment.
 
