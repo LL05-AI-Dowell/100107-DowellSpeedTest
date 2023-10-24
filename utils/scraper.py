@@ -1,3 +1,4 @@
+import json
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -415,8 +416,14 @@ class WebsiteInfoScraper:
             # If there are multiple forms, return a list of forms
             elif len(form_elements) > 1:
                 form_data_list = [self.extract_form_data(form) for form in form_elements]
-                if form_data_list:
-                    return form_data_list
+
+                # remove duplicates
+                unique_form_data_list = list(set(json.dumps(data) for data in form_data_list))
+                unique_form_data_list = [json.loads(data) for data in unique_form_data_list]
+
+                
+                if unique_form_data_list:
+                    return unique_form_data_list
                 else:
                     return "No Form Fields found on the Contact Us Forms."
             else:
