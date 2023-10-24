@@ -415,13 +415,32 @@ class WebsiteInfoScraper:
                 
             # If there are multiple forms, return a list of forms
             elif len(form_elements) > 1:
+                # form_data_list = [self.extract_form_data(form) for form in form_elements]
+
+                # # remove duplicates
+                # unique_form_data_list = list(set(json.dumps(data) for data in form_data_list))
+                # unique_form_data_list = [json.loads(data) for data in unique_form_data_list]
+                # form_data_list = [self.extract_form_data(form) for form in form_elements]
+
+                # # Append an index to each form data dictionary
+                # form_data_list_with_index = [{"index": index, **data} for index, data in enumerate(form_data_list)]
+
+                # # remove duplicates while preserving the index
+                # unique_form_data_list = [
+                #     dict(t) for t in {tuple(d.items()) for d in form_data_list_with_index}
+                # ]
                 form_data_list = [self.extract_form_data(form) for form in form_elements]
 
-                # remove duplicates
-                unique_form_data_list = list(set(json.dumps(data) for data in form_data_list))
-                unique_form_data_list = [json.loads(data) for data in unique_form_data_list]
+                # Append an index to each form data dictionary
+                form_data_list_with_index = [{"form_index": index, **data} for index, data in enumerate(form_data_list)]
 
-                
+                # Remove duplicates while preserving the index
+                unique_form_data_list = []
+
+                for data in form_data_list_with_index:
+                    if data not in unique_form_data_list:
+                        unique_form_data_list.append(data)
+                    
                 if unique_form_data_list:
                     return unique_form_data_list
                 else:
@@ -435,46 +454,111 @@ class WebsiteInfoScraper:
             self.browser.quit()
 
         
+    # def submit_contact_form_selenium(self, contact_us_link, form_data_list):
+    #     try:
+    #         # Open the contact_us_link
+    #         self.browser.get(contact_us_link)
+    #         WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
+
+    #         # Find all form elements on the page
+    #         form_elements = self.browser.find_elements(By.TAG_NAME, 'form')
+
+    #         response_data = []
+
+            # Iterate over each form
+            # for i, form in enumerate(form_elements):
+    
+            #     if i <= len(form_data_list):
+            #         form_data = form_data_list[i]
+
+            #         # for form_data in form_data_list:
+            #         for field_name, value in form_data.items():
+
+            #             # find input fields by name
+            #             try:
+            #                 input_field = form.find_element(By.NAME, field_name)
+            #                 input_field.send_keys(value)
+            #             except:
+            #                 input_field = form.find_element(By.ID, field_name)
+            #                 input_field.send_keys(value)
+
+
+            #     # Submit the form
+            #     try:
+            #         form.submit()
+            #         response = f"Form {i + 1} submitted successfully."
+            #         response_data.append(response)
+            #     except Exception as e:
+            #         response = f"Error submitting form {i + 1}: {str(e)}"
+            #         response_data.append({"error": response})
+        #     for form_data in form_data_list:
+        #         form_index = form_data.get("index", 0)  # Default to 0 if "form_index" is not present
+        #         if form_index < len(form_elements):
+        #             form = form_elements[form_index]
+
+        #             for field_name, value in form_data.items():
+        #                 if field_name != "index" and form.find_elements(By.NAME, field_name):
+        #                     try:
+        #                         input_field = form.find_element(By.NAME, field_name)
+        #                         input_field.send_keys(value)
+        #                     except:
+        #                         input_field = form.find_element(By.ID, field_name)
+        #                         input_field.send_keys(value)
+
+        #             try:
+        #                 form.submit()
+        #                 response = f"Form {form_index} submitted successfully."
+        #                 response_data.append(response)
+        #             except Exception as e:
+        #                 response = f"Error submitting form {form_index}: {str(e)}"
+        #                 response_data.append({"error": response})
+        #         else:
+        #             response_data.append("Form index out of range")
+
+        #     # Close the WebDriver
+        #     self.browser.quit()
+
+        #     return response_data
+        # except Exception as e:
+        #     raise Exception(e)
+
     def submit_contact_form_selenium(self, contact_us_link, form_data_list):
         try:
             # Open the contact_us_link
             self.browser.get(contact_us_link)
             WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
-
-            # Find all form elements on the page
+            
             form_elements = self.browser.find_elements(By.TAG_NAME, 'form')
-
             response_data = []
 
-            # Iterate over each form
-            for i, form in enumerate(form_elements):
-    
-                if i <= len(form_data_list):
-                    form_data = form_data_list[i]
+            for form_data in form_data_list:
+                form_index = form_data.get("form_index", 0)  # Default to 0 if "index" is not present
+                if form_index < len(form_elements):
+                    form = form_elements[form_index]
 
-                    # for form_data in form_data_list:
                     for field_name, value in form_data.items():
+                        if field_name != "form_index":
 
-                        # find input fields by name
-                        try:
-                            input_field = form.find_element(By.NAME, field_name)
-                            input_field.send_keys(value)
-                        except:
-                            input_field = form.find_element(By.ID, field_name)
-                            input_field.send_keys(value)
+                            try:
+                                # logging.info(field_name)
+                                input_field = form.find_element(By.NAME, field_name)
+                                input_field.send_keys(value)
+                            except:
+                                input_field = form.find_element(By.ID, field_name)
+                                input_field.send_keys(value)
 
+                    try:
+                        form.submit()
+                        response = f"Form {form_index + 1} submitted successfully."
+                        response_data.append(response)
+                    except Exception as e:
+                        response = f"Error submitting form {form_index + 1}: {str(e)}"
+                        response_data.append({"error": response})
+                else:
+                    response_data.append("Form index out of range")
 
-                # Submit the form
-                try:
-                    form.submit()
-                    response = f"Form {i + 1} submitted successfully."
-                    response_data.append(response)
-                except Exception as e:
-                    response = f"Error submitting form {i + 1}: {str(e)}"
-                    response_data.append({"error": response})
-
-                # Close the WebDriver
-                self.browser.quit()
+            # Close the WebDriver outside the loop
+            self.browser.quit()
 
             return response_data
         except Exception as e:
