@@ -481,7 +481,7 @@ class WebsiteInfoScraper:
             # Reset the stream position to the beginning
             output.seek(0)
 
-            return output
+            return output.getvalue()
 
         # elif file_type == "csv":
         #     output = io.StringIO()
