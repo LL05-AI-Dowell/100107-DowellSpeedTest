@@ -2,6 +2,8 @@ import json
 import re
 import requests
 from typing import Iterable, List
+from urllib.parse import urlparse
+
 
 def processApikey(api_key):
     url = f'https://100105.pythonanywhere.com/api/v3/process-services/?type=api_service&api_key={api_key}'
@@ -73,3 +75,8 @@ def sort_emails_by_validity(emails: Iterable[str]) -> tuple[List[str], List[str]
         except Exception:
             invalid.append(email)
     return valid, invalid
+
+def cleanUrl(url):
+    parsed_url = urlparse(url)
+    cleaned_url = parsed_url.netloc
+    return cleaned_url

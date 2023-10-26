@@ -1,11 +1,11 @@
-import json
-import time
+import csv
+from io import BytesIO
+import io
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
+import logging
 
 import re
 from bs4 import BeautifulSoup
@@ -14,14 +14,13 @@ from urllib3.util import parse_url
 from urllib.parse import unquote_plus
 from difflib import get_close_matches
 from concurrent.futures import ThreadPoolExecutor
-import requests
-from typing import Iterable, List, Dict
+
 
 from .misc import SOCIAL_PLATFORMS, common_address_components
 
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.core.os_manager import ChromeType
+
+from openpyxl import Workbook
+
 
 class WebsiteInfoScraper:
     """
@@ -415,20 +414,7 @@ class WebsiteInfoScraper:
                 
             # If there are multiple forms, return a list of forms
             elif len(form_elements) > 1:
-                # form_data_list = [self.extract_form_data(form) for form in form_elements]
 
-                # # remove duplicates
-                # unique_form_data_list = list(set(json.dumps(data) for data in form_data_list))
-                # unique_form_data_list = [json.loads(data) for data in unique_form_data_list]
-                # form_data_list = [self.extract_form_data(form) for form in form_elements]
-
-                # # Append an index to each form data dictionary
-                # form_data_list_with_index = [{"index": index, **data} for index, data in enumerate(form_data_list)]
-
-                # # remove duplicates while preserving the index
-                # unique_form_data_list = [
-                #     dict(t) for t in {tuple(d.items()) for d in form_data_list_with_index}
-                # ]
                 form_data_list = [self.extract_form_data(form) for form in form_elements]
 
                 # Append an index to each form data dictionary
@@ -452,6 +438,92 @@ class WebsiteInfoScraper:
             return None
         finally:
             self.browser.quit()
+
+
+    # def save_form_data_to_xlsx(self, web_url):
+    #     form_data = self.scrape_contact_us_page(web_url)
+        
+
+    #     if not form_data:
+    #         exception = f"No form's found in {web_url}"
+    #         logging.warning(exception)
+    #         raise Exception(exception)
+        
+
+    #     if isinstance(form_data, dict):
+    #         form_data = [form_data]
+
+    #     wb = Workbook()
+
+    #     for data in form_data:
+    #         sheet = wb.create_sheet(title=f"Form")  # Create a new sheet for each form
+    #         header = list(data.keys())
+    #         sheet.append(header)  # Add headers
+
+    #         # Add the form data as a row
+    #         data_row = [data[key] for key in data.keys()]
+    #         sheet.append(data_row)
+
+    #     del wb["Sheet"]  # Remove the default sheet
+
+    #     output = BytesIO()
+    #     wb.save(output)
+
+    #     # Reset the stream position to the beginning
+    #     output.seek(0)
+
+    #     return output.getvalue()
+
+    def save_form_data(self, web_url, file_type="xlsx"):
+        form_data = self.scrape_contact_us_page(web_url)
+        logging.error(form_data)
+
+        if not form_data:
+            print("No form data to save.")
+            return None
+
+        if isinstance(form_data, dict):
+            form_data = [form_data]
+
+        if file_type == "xlsx":
+            wb = Workbook()
+
+            for data in form_data:
+                sheet = wb.create_sheet(title=f"Form")  # Create a new sheet for each form
+                header = list(data.keys())
+                sheet.append(header)  # Add headers
+
+                # Add the form data as a row
+                data_row = [data[key] for key in data.keys()]
+                sheet.append(data_row)
+
+            del wb["Sheet"]  # Remove the default sheet
+
+            output = io.BytesIO()
+            wb.save(output)
+
+            # Reset the stream position to the beginning
+            output.seek(0)
+
+            return output.getvalue()
+
+        elif file_type == "csv":
+            output = io.StringIO()
+            csv_writer = csv.writer(output)
+            
+            # Write the CSV header
+            header = list(form_data[0].keys())
+            csv_writer.writerow(header)
+
+            # Write the CSV data
+            for data in form_data:
+                csv_writer.writerow([data[key] for key in data.keys()])
+
+            return output.getvalue()
+
+        else:
+            print("Unsupported file type. Please choose 'csv' or 'xlsx'.")
+            return None
 
         
     # def submit_contact_form_selenium(self, contact_us_link, form_data_list):

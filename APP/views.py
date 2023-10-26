@@ -1,6 +1,11 @@
+from io import BytesIO
+from django.http import HttpResponse
+import openpyxl
 from rest_framework import generics, status, decorators
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+
+from utils.helper import cleanUrl
 
 
 from .serializers import ContactInfoRequestSerializer, SubmitFormSerializer, WebsiteInfoRequestSerializer
@@ -86,3 +91,24 @@ def submit_contact_form(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=400)
+    
+@csrf_exempt
+@api_view(['GET'])
+def download_csv_form(request):
+    web_url = request.GET.get("web_url")
+
+    if not web_url:
+        return Response({"error": "web_url is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        # Initialize your web scraper
+        scraper = WebsiteInfoScraper()
+        excel_data = scraper.save_form_data_to_xlsx(web_url)
+        file_name = cleanUrl(web_url)
+        if excel_data:
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = f'attachment; filename="{file_name}.xlsx"'
+            response.write(excel_data)
+            return response
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
