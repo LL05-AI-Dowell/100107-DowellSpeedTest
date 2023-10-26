@@ -96,6 +96,7 @@ def submit_contact_form(request):
 @api_view(['GET'])
 def download_csv_form(request):
     web_url = request.GET.get("web_url")
+    file_type = request.GET.get("file_type")
 
     if not web_url:
         return Response({"error": "web_url is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -103,11 +104,11 @@ def download_csv_form(request):
     try:
         # Initialize your web scraper
         scraper = WebsiteInfoScraper()
-        excel_data = scraper.save_form_data_to_xlsx(web_url)
+        excel_data = scraper.save_form_data_to_excel(web_url, file_type=file_type)
         file_name = cleanUrl(web_url)
         if excel_data:
             response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            response['Content-Disposition'] = f'attachment; filename="{file_name}.xlsx"'
+            response['Content-Disposition'] = f'attachment; filename="{file_name}.{file_type}"'
             response.write(excel_data)
             return response
     except Exception as e:

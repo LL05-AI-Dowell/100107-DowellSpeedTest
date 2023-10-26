@@ -439,48 +439,14 @@ class WebsiteInfoScraper:
         finally:
             self.browser.quit()
 
-
-    # def save_form_data_to_xlsx(self, web_url):
-    #     form_data = self.scrape_contact_us_page(web_url)
-        
-
-    #     if not form_data:
-    #         exception = f"No form's found in {web_url}"
-    #         logging.warning(exception)
-    #         raise Exception(exception)
-        
-
-    #     if isinstance(form_data, dict):
-    #         form_data = [form_data]
-
-    #     wb = Workbook()
-
-    #     for data in form_data:
-    #         sheet = wb.create_sheet(title=f"Form")  # Create a new sheet for each form
-    #         header = list(data.keys())
-    #         sheet.append(header)  # Add headers
-
-    #         # Add the form data as a row
-    #         data_row = [data[key] for key in data.keys()]
-    #         sheet.append(data_row)
-
-    #     del wb["Sheet"]  # Remove the default sheet
-
-    #     output = BytesIO()
-    #     wb.save(output)
-
-    #     # Reset the stream position to the beginning
-    #     output.seek(0)
-
-    #     return output.getvalue()
-
-    def save_form_data(self, web_url, file_type="xlsx"):
+    def save_form_data_to_excel(self, web_url, file_type):
         form_data = self.scrape_contact_us_page(web_url)
         logging.error(form_data)
 
         if not form_data:
-            print("No form data to save.")
-            return None
+            exception = f"No form's found in {web_url}"
+            logging.warning(exception)
+            raise Exception(exception)
 
         if isinstance(form_data, dict):
             form_data = [form_data]
@@ -509,21 +475,23 @@ class WebsiteInfoScraper:
 
         elif file_type == "csv":
             output = io.StringIO()
-            csv_writer = csv.writer(output)
-            
-            # Write the CSV header
-            header = list(form_data[0].keys())
-            csv_writer.writerow(header)
 
-            # Write the CSV data
-            for data in form_data:
+            for index, data in enumerate(form_data, start=1):
+                csv_writer = csv.writer(output)
+                
+                # Write the CSV header
+                header = list(data.keys())
+                csv_writer.writerow(header)
+                
+                # Write the CSV data
                 csv_writer.writerow([data[key] for key in data.keys()])
+                
+                output.write("\n")  # Add a newline to separate sheets
 
             return output.getvalue()
 
         else:
-            print("Unsupported file type. Please choose 'csv' or 'xlsx'.")
-            return None
+            raise Exception("Unsupported file type. Please choose 'csv' or 'xlsx'.")
 
         
     # def submit_contact_form_selenium(self, contact_us_link, form_data_list):
