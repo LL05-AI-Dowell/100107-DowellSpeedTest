@@ -378,17 +378,32 @@ class WebsiteInfoScraper:
             field_name = field.get('name')
             field_type = field.get('type')
             field_id = field.get('id')
+            is_hidden = field.get('type') == 'hidden'
 
-            if field_name and field_type:
-                form_data[field_name] = field_type
-            elif field.name == 'textarea' and field_name:
-                form_data[field_name] = 'textarea'
-            elif field.name == 'textarea' and field_id:
-                form_data[field_id] = 'textarea'
-            elif field_id and not field_name:
+
+            # Exclude fields named "submit" and hidden fields
+            if field_name == 'submit' or is_hidden:
+                continue
+                
+            if field_name:
+                if field_type:
+                    form_data[field_name] = field_type
+                elif field.name == 'textarea':
+                    form_data[field_name] = 'textarea'
+
+            elif field_id and field_type:
                 form_data[field_id] = field_type
-            else:
-                form_data[field_type] = field_type
+
+            # if field_name and field_type:
+            #     form_data[field_name] = field_type
+            # elif field.name == 'textarea' and field_name:
+            #     form_data[field_name] = 'textarea'
+            # elif field.name == 'textarea' and field_id:
+            #     form_data[field_id] = 'textarea'
+            # elif field_id and not field_name:
+            #     form_data[field_id] = field_type
+            # else:
+            #     form_data[field_type] = field_type
 
         return form_data
     
