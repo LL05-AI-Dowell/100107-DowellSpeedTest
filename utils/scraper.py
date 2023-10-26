@@ -19,7 +19,7 @@ from concurrent.futures import ThreadPoolExecutor
 from .misc import SOCIAL_PLATFORMS, common_address_components
 
 
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 
 
 class WebsiteInfoScraper:
@@ -441,7 +441,7 @@ class WebsiteInfoScraper:
 
     def save_form_data_to_excel(self, web_url, file_type):
         form_data = self.scrape_contact_us_page(web_url)
-        logging.error(form_data)
+        logging.info(form_data)
 
         if not form_data:
             exception = f"No form's found in {web_url}"
@@ -493,7 +493,27 @@ class WebsiteInfoScraper:
         else:
             raise Exception("Unsupported file type. Please choose 'csv' or 'xlsx'.")
 
-        
+    def extract_excel_data(self, file):
+        try:
+            workbook = load_workbook(file, read_only=True)
+            form_data = []
+
+            for sheet_name in workbook.sheetnames:
+                sheet = workbook[sheet_name]
+
+                # Assuming the first row contains headers
+                headers = [cell for cell in next(sheet.iter_rows(values_only=True))]
+
+                for row in sheet.iter_rows(min_row=2, values_only=True):
+                    data = dict(zip(headers, row))
+                    form_data.append(data)
+
+            logging.info(form_data)
+            return form_data
+
+        except Exception as e:
+            raise Exception(f"Error extracting data from XLSX file: {e}")
+
     # def submit_contact_form_selenium(self, contact_us_link, form_data_list):
     #     try:
     #         # Open the contact_us_link

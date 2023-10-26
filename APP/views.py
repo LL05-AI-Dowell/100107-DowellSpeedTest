@@ -1,4 +1,5 @@
 from io import BytesIO
+import logging
 from django.http import HttpResponse
 import openpyxl
 from rest_framework import generics, status, decorators
@@ -8,7 +9,7 @@ from rest_framework.decorators import api_view
 from utils.helper import cleanUrl
 
 
-from .serializers import ContactInfoRequestSerializer, SubmitFormSerializer, WebsiteInfoRequestSerializer
+from .serializers import ContactInfoRequestSerializer, SubmitFileSerializer, SubmitFormSerializer, WebsiteInfoRequestSerializer
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -87,6 +88,27 @@ def submit_contact_form(request):
             scraper = WebsiteInfoScraper()
             response_data = scraper.submit_contact_form_selenium(contact_us_link, form_data)
             return Response({"success": response_data}, status=200)
+        return Response(serializer.errors)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
+    
+@csrf_exempt
+@api_view(['POST'])
+def submit_contact_form_excel(request):
+    try: 
+        contact_us_link = request.data.get("page_link")
+        file = request.FILES.get("file")
+
+        serializer = SubmitFileSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            # initialize scraper
+            scraper = WebsiteInfoScraper()
+            # extract form data from excel file
+            extracted_data = scraper.extract_excel_data(file)
+            # submit form data
+            post_form = scraper.submit_contact_form_selenium(contact_us_link, extracted_data)
+            return Response({"success": post_form}, status=200)
         return Response(serializer.errors)
 
     except Exception as e:
