@@ -120,7 +120,7 @@ def submit_contact_form_excel(request):
     except Exception as e:
         return Response({"error": str(e)}, status=400)
     
-@csrf_exempt
+# @csrf_exempt
 @api_view(['GET'])
 def download_csv_form(request):
     web_url = request.GET.get("web_url")
