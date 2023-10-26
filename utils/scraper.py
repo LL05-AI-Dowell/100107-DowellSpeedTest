@@ -481,24 +481,24 @@ class WebsiteInfoScraper:
             # Reset the stream position to the beginning
             output.seek(0)
 
-            return output.getvalue()
+            return output
 
-        elif file_type == "csv":
-            output = io.StringIO()
+        # elif file_type == "csv":
+        #     output = io.StringIO()
 
-            for index, data in enumerate(form_data, start=1):
-                csv_writer = csv.writer(output)
+        #     for index, data in enumerate(form_data, start=1):
+        #         csv_writer = csv.writer(output)
                 
-                # Write the CSV header
-                header = list(data.keys())
-                csv_writer.writerow(header)
+        #         # Write the CSV header
+        #         header = list(data.keys())
+        #         csv_writer.writerow(header)
                 
-                # Write the CSV data
-                csv_writer.writerow([data[key] for key in data.keys()])
+        #         # Write the CSV data
+        #         csv_writer.writerow([data[key] for key in data.keys()])
                 
-                output.write("\n")  # Add a newline to separate sheets
+        #         output.write("\n")  # Add a newline to separate sheets
 
-            return output.getvalue()
+        #     return output.getvalue()
 
         else:
             raise Exception("Unsupported file type. Please choose 'csv' or 'xlsx'.")
