@@ -56,20 +56,25 @@ website_info_extraction_api_view = WebsiteInfoExtractionAPIView.as_view()
 class ContactUsAPI(generics.GenericAPIView):
     serializer_class = ContactInfoRequestSerializer
     queryset = []
+
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            contact_us_url = serializer.data.get("page_link")
-            # validated_data = serializer.validated_data
-            web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
-            response_dict = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
 
-            # print(response_dict)
+        try:
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                contact_us_url = serializer.data.get("page_link")
+                # validated_data = serializer.validated_data
+                web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
+                response_dict = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
 
-            # if response_dict:
-            return Response(response_dict, status=status.HTTP_200_OK)
-            # return Response("Error" , status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                # print(response_dict)
+
+                # if response_dict:
+                return Response(response_dict, status=status.HTTP_200_OK)
+                # return Response("Error" , status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": f"{e}"})
     
 
 
@@ -107,6 +112,7 @@ def submit_contact_form_excel(request):
             # extract form data from excel file
             extracted_data = scraper.extract_excel_data(file)
             # submit form data
+            print(extracted_data)
             post_form = scraper.submit_contact_form_selenium(contact_us_link, extracted_data)
             return Response({"success": post_form}, status=200)
         return Response(serializer.errors)

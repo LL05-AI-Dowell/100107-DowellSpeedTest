@@ -378,32 +378,26 @@ class WebsiteInfoScraper:
             field_name = field.get('name')
             field_type = field.get('type')
             field_id = field.get('id')
-            is_hidden = field.get('type') == 'hidden'
 
+            is_hidden = field.get('type') == 'hidden'
+            is_submit = field.get('type') == 'submit'
 
             # Exclude fields named "submit" and hidden fields
-            if field_name == 'submit' or is_hidden:
+            if is_submit or is_hidden:
                 continue
                 
-            if field_name:
-                if field_type:
-                    form_data[field_name] = field_type
-                elif field.name == 'textarea':
-                    form_data[field_name] = 'textarea'
-
-            elif field_id and field_type:
+        
+            if field_type and field_name:
+                form_data[field_name] = field_type
+            
+            elif field.name == 'textarea' and field_name:
+                form_data[field_name] = 'textarea'
+            elif field.name == 'textarea' and field_id:
+                form_data[field_id] = 'textarea'
+            elif field_id and not field_name:
                 form_data[field_id] = field_type
-
-            # if field_name and field_type:
-            #     form_data[field_name] = field_type
-            # elif field.name == 'textarea' and field_name:
-            #     form_data[field_name] = 'textarea'
-            # elif field.name == 'textarea' and field_id:
-            #     form_data[field_id] = 'textarea'
-            # elif field_id and not field_name:
-            #     form_data[field_id] = field_type
-            # else:
-            #     form_data[field_type] = field_type
+            else:
+                form_data[field_type] = field_type
 
         return form_data
     
@@ -449,10 +443,11 @@ class WebsiteInfoScraper:
             else:
                 return "Form(s) not found on the Contact Us page"
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
-            return None
+            raise Exception(f"An error occurred: {str(e)}")
+        
         finally:
             self.browser.quit()
+            
 
     def save_form_data_to_excel(self, web_url, file_type):
         form_data = self.scrape_contact_us_page(web_url)
@@ -529,73 +524,6 @@ class WebsiteInfoScraper:
         except Exception as e:
             raise Exception(f"Error extracting data from XLSX file: {e}")
 
-    # def submit_contact_form_selenium(self, contact_us_link, form_data_list):
-    #     try:
-    #         # Open the contact_us_link
-    #         self.browser.get(contact_us_link)
-    #         WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
-
-    #         # Find all form elements on the page
-    #         form_elements = self.browser.find_elements(By.TAG_NAME, 'form')
-
-    #         response_data = []
-
-            # Iterate over each form
-            # for i, form in enumerate(form_elements):
-    
-            #     if i <= len(form_data_list):
-            #         form_data = form_data_list[i]
-
-            #         # for form_data in form_data_list:
-            #         for field_name, value in form_data.items():
-
-            #             # find input fields by name
-            #             try:
-            #                 input_field = form.find_element(By.NAME, field_name)
-            #                 input_field.send_keys(value)
-            #             except:
-            #                 input_field = form.find_element(By.ID, field_name)
-            #                 input_field.send_keys(value)
-
-
-            #     # Submit the form
-            #     try:
-            #         form.submit()
-            #         response = f"Form {i + 1} submitted successfully."
-            #         response_data.append(response)
-            #     except Exception as e:
-            #         response = f"Error submitting form {i + 1}: {str(e)}"
-            #         response_data.append({"error": response})
-        #     for form_data in form_data_list:
-        #         form_index = form_data.get("index", 0)  # Default to 0 if "form_index" is not present
-        #         if form_index < len(form_elements):
-        #             form = form_elements[form_index]
-
-        #             for field_name, value in form_data.items():
-        #                 if field_name != "index" and form.find_elements(By.NAME, field_name):
-        #                     try:
-        #                         input_field = form.find_element(By.NAME, field_name)
-        #                         input_field.send_keys(value)
-        #                     except:
-        #                         input_field = form.find_element(By.ID, field_name)
-        #                         input_field.send_keys(value)
-
-        #             try:
-        #                 form.submit()
-        #                 response = f"Form {form_index} submitted successfully."
-        #                 response_data.append(response)
-        #             except Exception as e:
-        #                 response = f"Error submitting form {form_index}: {str(e)}"
-        #                 response_data.append({"error": response})
-        #         else:
-        #             response_data.append("Form index out of range")
-
-        #     # Close the WebDriver
-        #     self.browser.quit()
-
-        #     return response_data
-        # except Exception as e:
-        #     raise Exception(e)
 
     def submit_contact_form_selenium(self, contact_us_link, form_data_list):
         try:
