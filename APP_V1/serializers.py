@@ -23,3 +23,7 @@ class WebsiteInfoRequestSerializer(serializers.Serializer):
     info_request = serializers.JSONField(write_only=True, required=True, initial=INFO_REQUEST_FORMAT, validators=[InfoRequestValidator().validate])
     api_key = serializers.CharField(allow_null=False , required=True)
 
+
+class PrivateContactInfoRequestSerializer(serializers.Serializer):
+    api_key = serializers.CharField()
+    page_link = serializers.URLField(validators=[URLValidator], required=True)

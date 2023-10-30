@@ -21,12 +21,10 @@ class WebsiteInfoRequestSerializer(serializers.Serializer):
     web_url = serializers.URLField(validators=[URLValidator], required=True)
     max_search_depth = serializers.IntegerField(min_value=0, max_value=2, required=False)
     info_request = serializers.JSONField(write_only=True, required=True, initial=INFO_REQUEST_FORMAT, validators=[InfoRequestValidator().validate])
-    api_key = serializers.CharField(allow_null=True , required=False)
 
 
-class ContactInfoRequestSerializer(serializers.Serializer):
+class PublicContactInfoRequestSerializer(serializers.Serializer):
     page_link = serializers.URLField(validators=[URLValidator], required=True)
-
 
 class SubmitFormSerializer(serializers.Serializer):
     page_link = serializers.URLField()
