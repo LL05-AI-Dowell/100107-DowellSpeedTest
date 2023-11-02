@@ -74,7 +74,7 @@ Request Body
 
 ```json
 {
-    "web_url": "https://www.sstream.co.ke/",
+    "web_url": "https://www.uxlivinglab.org/",
     "info_request": {
         "addresses": true,
         "emails": true,
@@ -90,7 +90,7 @@ Request Body
         ],
         "phone_numbers": true,
         "social_media_links": {
-            "all": true,
+            "all": false,
             "choices": [
                 "facebook",
                 "twitter",
@@ -127,86 +127,124 @@ Response - 200
 
 ```json
     {
-    "meta_data": {
-        "addresses": null,
-        "emails": [
-            "hello@sstream.co",
-            "On@sstream.ke"
-        ],
-        "links": [
-            "https:///www.sstream.co.ke/contact",
-            "https:///www.sstream.co.ke/events-1",
-            "mailto:///hello@sstream.co.ke",
-            "https:///www.sstream.co.ke/about-1",
-            "http:///www.facebook.com/sstreamke",
-            "https:///www.linkedin.com/in/sstreamkenya",
-            "https:///www.sstream.co.ke",
-            "http:///instagram.com/sstream.ke",
-            "https:///www.tiktok.com/@sstreamke",
-            "https:///www.sstream.co.ke/blog",
-            "https:///twitter.com/SstreamK",
-            "https:///www.sstream.co.ke/shop",
-            "https:///www.sstream.co.ke/privacy"
-        ],
-        "logos": [
-            "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png",
-            "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_32%2Ch_32%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png",
-            "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_180%2Ch_180%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png"
-        ],
-        "name": "Sstream",
-        "pages_url": {
-            "about": "https:///www.sstream.co.ke/about-1",
-            "contact": "https:///www.sstream.co.ke/contact",
-            "products": null,
-            "services": "https://www.sstream.co.ke/events-1",
-            "careers": null
-        },
-        "phone_numbers": [],
-        "social_media_links": {
+        "meta_data": {
+            "addresses": [
+            "150000 locations worldwide.   Experience  License CompatibilityCheck license compatibility between different software components used in a project.   Experience    Previous  NextGrow with UX Living LabGrow with  UX Living Lab We are looking for independent sales agents to distribute our software applications in various small business sectors like Schools, Hotels, Coffee shops, Salons, Corner stores and Boutiques. The agent should interact with small business owners in their area and sell the software.   Learn More  Contact UX Living LabContact  UX Living Lab Do you have any questions, or enquiries about our products"
+            ],
+            "emails": [],
+            "links": [
+            "https:///www.uxlivinglab.org",
+            "https:///www.uxlivinglab.org/products/samanta_content_evaluator",
+            "https:///amzn.to/44o4Zi6",
+            "https:///www.uxlivinglab.org/products/dowell-workflow-ai",
+            "https:///www.uxlivinglab.org/products/social-media-automation",
+            "https:///www.uxlivinglab.org/products/live-stream-dashboard",
+            "https:///dowellresearch.se",
+            "https:///www.uxlivinglab.org/products/dowell-wifi-qr-code",
+            "https:///github.com/DoWellUXLab",
+            "https:///100093.pythonanywhere.com/?session_id=zbyzzqnvc1srluvgrvp4sh7poyw7orik",
+            "https:///www.facebook.com/livinglabstories",
+            "https:///www.uxlivinglab.org/products/open_source_license_compatibility",
+            "https://www.uxlivinglab.org#content",
+            "https:///www.uxlivinglab.org/products/dowell-legalzard",
+            "https:///www.salesagent.dowellstore.org",
+            "https:///play.google.com/store/apps/developer?id=DoWell+UX+Living+Lab&hl=en-IN",
+            "https:///play.google.com/store/apps/developer?id=DoWell+UX+Living+Lab&hl=en-IN%20",
+            "https:///ll07-team-dowell.github.io/Jobportal/#/?view=product&qr_id=WfV11hriuSx1&company_id=6385c0f18eca0fb652c94561&company_data_type=Real_Data&link_id=1685907997681652206",
+            "https:///www.uxlivinglab.org/privacy-policy",
+            "https:///search-livinglab.flutterflow.app",
+            "https:///apps.apple.com/us/developer/dowell-research/id1648847971",
+            "https:///100014.pythonanywhere.com",
+            "https:///www.uxlivinglab.org/about-us",
+            "https:///play.google.com/store/apps/developer?id=DoWell+UX+Living+Lab",
+            "https:///www.uxlivinglab.org/products/digital-queue",
+            "https:///dowellresearch.sg",
+            "https:///www.youtube.com/channel/UC_Ftf9dTQtKHS2N0KD0duwg",
+            "https:///www.uxlivinglab.org/products/team-management",
+            "https:///www.uxlivinglab.org/dowell-ux-living-lab-extension",
+            "https:///dowellresearch.uk",
+            "https:///www.uxlivinglab.org/products/living-lab-maps",
+            "https:///twitter.com/uxlivinglab",
+            "https:///uk.linkedin.com/showcase/uxlivinglab",
+            "https:///www.uxlivinglab.org/products/living-lab-chat",
+            "https:///dowell-research.myshopify.com",
+            "https:///www.uxlivinglab.org/products/dowell-living-lab",
+            "https:///www.uxlivinglab.org/products/web_crawler",
+            "https:///www.uxlivinglab.org/products/qr-code-generator-2",
+            "https:///dowellresearch.de",
+            "https://www.uxlivinglab.org",
+            "https:///www.uxlivinglab.org/products",
+            "https:///www.uxlivinglab.org/products/dowell-logo-scan",
+            "https:///www.uxlivinglab.org/products/permutation-calculator",
+            "https:///www.uxlivinglab.org/contact",
+            "https:///www.uxlivinglab.org/products/dowell-cx-live",
+            "https:///www.uxlivinglab.org/products/dowell-ux-live",
+            "https:///ll04-finance-dowell.github.io/100088-dowellpayment",
+            "https:///dowellresearch.uk/project-scenario",
+            "https:///www.uxlivinglab.org/products/voice-of-customers",
+            "https:///calendly.com/uxlivinglab/30?month=2023-08",
+            "https:///www.instagram.com/livinglabstories"
+            ],
+            "logos": [
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/09/Untitled-design.jpg",
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/08/cropped-cropped-Livinglab-180x180.png",
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/08/cropped-cropped-Livinglab-32x32.png",
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/08/cropped-cropped-Livinglab-192x192.png"
+            ],
+            "name": "DoWell UX Living Lab",
+            "pages_url": {
+            "about": "https:///www.uxlivinglab.org/about-us",
+            "products": "https:///www.uxlivinglab.org/products/samanta_content_evaluator",
+            "contact": "https:///www.uxlivinglab.org/contact",
+            "careers": null,
+            "services": null
+            },
+            "phone_numbers": [
+            "168590799768",
+            "1652206",
+            "1648847971"
+            ],
+            "social_media_links": {
             "facebook": [
-                "http:///www.facebook.com/sstreamke"
+                "https:///www.facebook.com/livinglabstories"
             ],
             "twitter": [
-                "https:///twitter.com/SstreamK"
+                "https:///twitter.com/uxlivinglab"
             ],
             "instagram": [
-                "http:///instagram.com/sstream.ke"
+                "https:///www.instagram.com/livinglabstories"
             ],
             "linkedin": [
-                "https:///www.linkedin.com/in/sstreamkenya"
+                "https:///uk.linkedin.com/showcase/uxlivinglab"
             ],
-            "youtube": null,
-            "reddit": null,
-            "snapchat": null,
-            "whatsapp": null,
-            "telegram": null,
-            "wechat": null,
-            "tiktok": [
-                "https:///www.tiktok.com/@sstreamke"
+            "youtube": [
+                "https:///www.youtube.com/channel/UC_Ftf9dTQtKHS2N0KD0duwg"
             ],
-            "soundcloud": null,
-            "spotify": null,
-            "medium": null,
-            "quora": null,
-            "twitch": null
+            "pinterest": null,
+            "tumblr": null,
+            "snapchat": null
+            },
+            "website_socials": null
         },
-        "website_socials": null
-    },
-    "company_name": "Sstream",
-    "phone_numbers": [],
-    "addresses": null,
-    "emails_found": [
-        "hello@sstream.co",
-        "On@sstream.ke"
-    ],
-    "logos": [
-        "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png",
-        "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_32%2Ch_32%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png",
-        "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_180%2Ch_180%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png"
-    ],
-    "website_social_handles": null,
-    "website_url": "https://www.sstream.co.ke"
-    }
+        "company_name": "DoWell UX Living Lab",
+        "phone_numbers": [
+            "168590799768",
+            "1652206",
+            "1648847971"
+        ],
+        "addresses": [
+            "150000 locations worldwide.   Experience  License CompatibilityCheck license compatibility between different software components used in a project.   Experience    Previous  NextGrow with UX Living LabGrow with  UX Living Lab We are looking for independent sales agents to distribute our software applications in various small business sectors like Schools, Hotels, Coffee shops, Salons, Corner stores and Boutiques. The agent should interact with small business owners in their area and sell the software.   Learn More  Contact UX Living LabContact  UX Living Lab Do you have any questions, or enquiries about our products"
+        ],
+        "emails_found": [],
+        "logos": [
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/09/Untitled-design.jpg",
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/08/cropped-cropped-Livinglab-180x180.png",
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/08/cropped-cropped-Livinglab-32x32.png",
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/08/cropped-cropped-Livinglab-192x192.png"
+        ],
+        "website_social_handles": null,
+        "website_url": "https://www.uxlivinglab.org"
+}
 ```
 
 POST: `/api/v1/website-info-extractor/`
@@ -214,9 +252,9 @@ POST: `/api/v1/website-info-extractor/`
 Request Body
 
 ```json
-{
-    "web_url": "https://www.sstream.co.ke/",
-    "api_key": "2455e5e-9utewwq5r776-yree",
+{   
+    "api_key": "<your-api-key>",
+    "web_url": "https://www.uxlivinglab.org/",
     "info_request": {
         "addresses": true,
         "emails": true,
@@ -269,92 +307,123 @@ Response - 200
 
 ```json
     {
-    "success": true,
-    "message": "The information was successfully extracted",
-    "data": {
         "meta_data": {
-            "addresses": null,
-            "emails": [
-                "hello@sstream.co"
+            "addresses": [
+            "150000 locations worldwide.   Experience  License CompatibilityCheck license compatibility between different software components used in a project.   Experience    Previous  NextGrow with UX Living LabGrow with  UX Living Lab We are looking for independent sales agents to distribute our software applications in various small business sectors like Schools, Hotels, Coffee shops, Salons, Corner stores and Boutiques. The agent should interact with small business owners in their area and sell the software.   Learn More  Contact UX Living LabContact  UX Living Lab Do you have any questions, or enquiries about our products"
             ],
+            "emails": [],
             "links": [
-                "https:///twitter.com/SstreamK",
-                "https:///www.sstream.co.ke/blog",
-                "https:///www.sstream.co.ke/contact",
-                "https:///www.sstream.co.ke/shop",
-                "https:///www.sstream.co.ke/about-1",
-                "http:///www.facebook.com/sstreamke",
-                "https:///www.linkedin.com/in/sstreamkenya",
-                "https:///www.sstream.co.ke/events-1",
-                "https:///www.sstream.co.ke/privacy",
-                "https:///www.sstream.co.ke",
-                "http:///instagram.com/sstream.ke",
-                "https:///www.tiktok.com/@sstreamke",
-                "mailto:///hello@sstream.co.ke"
+            "https:///www.uxlivinglab.org",
+            "https:///www.uxlivinglab.org/products/samanta_content_evaluator",
+            "https:///amzn.to/44o4Zi6",
+            "https:///www.uxlivinglab.org/products/dowell-workflow-ai",
+            "https:///www.uxlivinglab.org/products/social-media-automation",
+            "https:///www.uxlivinglab.org/products/live-stream-dashboard",
+            "https:///dowellresearch.se",
+            "https:///www.uxlivinglab.org/products/dowell-wifi-qr-code",
+            "https:///github.com/DoWellUXLab",
+            "https:///100093.pythonanywhere.com/?session_id=zbyzzqnvc1srluvgrvp4sh7poyw7orik",
+            "https:///www.facebook.com/livinglabstories",
+            "https:///www.uxlivinglab.org/products/open_source_license_compatibility",
+            "https://www.uxlivinglab.org#content",
+            "https:///www.uxlivinglab.org/products/dowell-legalzard",
+            "https:///www.salesagent.dowellstore.org",
+            "https:///play.google.com/store/apps/developer?id=DoWell+UX+Living+Lab&hl=en-IN",
+            "https:///play.google.com/store/apps/developer?id=DoWell+UX+Living+Lab&hl=en-IN%20",
+            "https:///ll07-team-dowell.github.io/Jobportal/#/?view=product&qr_id=WfV11hriuSx1&company_id=6385c0f18eca0fb652c94561&company_data_type=Real_Data&link_id=1685907997681652206",
+            "https:///www.uxlivinglab.org/privacy-policy",
+            "https:///search-livinglab.flutterflow.app",
+            "https:///apps.apple.com/us/developer/dowell-research/id1648847971",
+            "https:///100014.pythonanywhere.com",
+            "https:///www.uxlivinglab.org/about-us",
+            "https:///play.google.com/store/apps/developer?id=DoWell+UX+Living+Lab",
+            "https:///www.uxlivinglab.org/products/digital-queue",
+            "https:///dowellresearch.sg",
+            "https:///www.youtube.com/channel/UC_Ftf9dTQtKHS2N0KD0duwg",
+            "https:///www.uxlivinglab.org/products/team-management",
+            "https:///www.uxlivinglab.org/dowell-ux-living-lab-extension",
+            "https:///dowellresearch.uk",
+            "https:///www.uxlivinglab.org/products/living-lab-maps",
+            "https:///twitter.com/uxlivinglab",
+            "https:///uk.linkedin.com/showcase/uxlivinglab",
+            "https:///www.uxlivinglab.org/products/living-lab-chat",
+            "https:///dowell-research.myshopify.com",
+            "https:///www.uxlivinglab.org/products/dowell-living-lab",
+            "https:///www.uxlivinglab.org/products/web_crawler",
+            "https:///www.uxlivinglab.org/products/qr-code-generator-2",
+            "https:///dowellresearch.de",
+            "https://www.uxlivinglab.org",
+            "https:///www.uxlivinglab.org/products",
+            "https:///www.uxlivinglab.org/products/dowell-logo-scan",
+            "https:///www.uxlivinglab.org/products/permutation-calculator",
+            "https:///www.uxlivinglab.org/contact",
+            "https:///www.uxlivinglab.org/products/dowell-cx-live",
+            "https:///www.uxlivinglab.org/products/dowell-ux-live",
+            "https:///ll04-finance-dowell.github.io/100088-dowellpayment",
+            "https:///dowellresearch.uk/project-scenario",
+            "https:///www.uxlivinglab.org/products/voice-of-customers",
+            "https:///calendly.com/uxlivinglab/30?month=2023-08",
+            "https:///www.instagram.com/livinglabstories"
             ],
             "logos": [
-                "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_32%2Ch_32%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png",
-                "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_180%2Ch_180%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png",
-                "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png"
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/09/Untitled-design.jpg",
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/08/cropped-cropped-Livinglab-180x180.png",
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/08/cropped-cropped-Livinglab-32x32.png",
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/08/cropped-cropped-Livinglab-192x192.png"
             ],
-            "name": "Sstream",
+            "name": "DoWell UX Living Lab",
             "pages_url": {
-                "about": "https:///www.sstream.co.ke/about-1",
-                "contact": "https:///www.sstream.co.ke/contact",
-                "careers": null,
-                "services": "https://www.sstream.co.ke/events-1",
-                "products": null
+            "about": "https:///www.uxlivinglab.org/about-us",
+            "products": "https:///www.uxlivinglab.org/products/samanta_content_evaluator",
+            "contact": "https:///www.uxlivinglab.org/contact",
+            "careers": null,
+            "services": null
             },
-            "phone_numbers": [],
+            "phone_numbers": [
+            "168590799768",
+            "1652206",
+            "1648847971"
+            ],
             "social_media_links": {
-                "facebook": [
-                    "http:///www.facebook.com/sstreamke"
-                ],
-                "twitter": [
-                    "https:///twitter.com/SstreamK"
-                ],
-                "instagram": [
-                    "http:///instagram.com/sstream.ke"
-                ],
-                "linkedin": [
-                    "https:///www.linkedin.com/in/sstreamkenya"
-                ],
-                "youtube": null,
-                "reddit": null,
-                "snapchat": null,
-                "whatsapp": null,
-                "telegram": null,
-                "wechat": null,
-                "tiktok": [
-                    "https:///www.tiktok.com/@sstreamke"
-                ],
-                "soundcloud": null,
-                "spotify": null,
-                "medium": null,
-                "quora": null,
-                "twitch": null
+            "facebook": [
+                "https:///www.facebook.com/livinglabstories"
+            ],
+            "twitter": [
+                "https:///twitter.com/uxlivinglab"
+            ],
+            "instagram": [
+                "https:///www.instagram.com/livinglabstories"
+            ],
+            "linkedin": [
+                "https:///uk.linkedin.com/showcase/uxlivinglab"
+            ],
+            "youtube": [
+                "https:///www.youtube.com/channel/UC_Ftf9dTQtKHS2N0KD0duwg"
+            ],
+            "pinterest": null,
+            "tumblr": null,
+            "snapchat": null
             },
             "website_socials": null
         },
-        "company_name": "Sstream",
-        "phone_numbers": [],
-        "addresses": null,
-        "emails_found": [
-            "hello@sstream.co"
+        "company_name": "DoWell UX Living Lab",
+        "phone_numbers": [
+            "168590799768",
+            "1652206",
+            "1648847971"
         ],
-        "verified_emails": [],
-        "unverified_emails": [
-            "hello@sstream.co"
+        "addresses": [
+            "150000 locations worldwide.   Experience  License CompatibilityCheck license compatibility between different software components used in a project.   Experience    Previous  NextGrow with UX Living LabGrow with  UX Living Lab We are looking for independent sales agents to distribute our software applications in various small business sectors like Schools, Hotels, Coffee shops, Salons, Corner stores and Boutiques. The agent should interact with small business owners in their area and sell the software.   Learn More  Contact UX Living LabContact  UX Living Lab Do you have any questions, or enquiries about our products"
         ],
+        "emails_found": [],
         "logos": [
-            "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_32%2Ch_32%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png",
-            "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_180%2Ch_180%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png",
-            "https:///static.wixstatic.com/media/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/e1eb7c_573c09c5b1e24cc6bac97e0a85786494%7Emv2.png"
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/09/Untitled-design.jpg",
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/08/cropped-cropped-Livinglab-180x180.png",
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/08/cropped-cropped-Livinglab-32x32.png",
+            "https:///www.uxlivinglab.org/wp-content/uploads/2023/08/cropped-cropped-Livinglab-192x192.png"
         ],
         "website_social_handles": null,
-        "website_url": "https://www.sstream.co.ke"
-    },
-    "credits": 60
+        "website_url": "https://www.uxlivinglab.org"
 }
 ```
 
