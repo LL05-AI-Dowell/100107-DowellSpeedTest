@@ -4,16 +4,13 @@
 This project involves the Scrapping web_urls through an API using 
 a scrapper library to extact infomation within the different website
 
-To use this API, clients can send HTTP requests to create, retrieve, 
-update, or delete QR codes. The API supports the Extaction data
+ The API supports the Extaction data
 with various options such as getting the meta_data which includes 
 the page_urls,phone_numbers,socil_media_links, name , logos, 
 company_name,emails found and the website_url
 
 Clients can Extract data by providing a weburl, 
  The API will return an extracted data with all metadata 
-image of the QR code that can be used in various contexts such as 
-websites, printed materials, or mobile apps.
 
 The API also supports getting verified or unverified emails by passing
 the apikey alongside getting all metadata of the site
@@ -52,16 +49,19 @@ python3 manage.py runserver
 
 ## API Documentation 
 
+## BASE_URL 
+`https://www.uxlive.me/`
+
 
 
 | HTTP Verbs | Endpoints                      | Action                                               |
 |------------|--------------------------------|------------------------------------------------------|
-| POST       | api/website-info-extractor/   | To get meta_data by passing the web url          |
-| POST       | api/website-info-extractor/   | To Get verified and unverifed emails Generated.                     |
-| POST       | api/contact-us-extractor/     | To retrieve the conctact-us-page
+| POST       | api/website-info-extractor/    | To get meta_data by passing the web url          |
+| POST       | api/v1/website-info-extractor/ | To Get verified and unverifed emails Generated.                     |
+| POST       | api/contact-us-extractor/      | To retrieve the conctact-us-page
  Created     |
-| POST       | api/v1/submit-contact-form/   | To Send data to contact-us-page 
- |
+| POST       | api/v1/submit-contact-form/    | To Send data to contact-us-page 
+|
 
 
 ##  Endpoints Definition(Request - Response)
