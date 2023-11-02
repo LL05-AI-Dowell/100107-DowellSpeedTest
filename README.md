@@ -62,7 +62,8 @@ python3 manage.py runserver
  Created     |
 | POST       | api/v1/submit-contact-form/    | To Send data to contact-us-page 
 |
-| GET        |/api/download-csv/              | To download the excel file                            |   
+| GET        | api/download-csv/              | To download the excel file                           |   
+| POST       | api/submit-csv/                | To submit the csv file                               |
 
 
 ##  Endpoints Definition(Request - Response)
@@ -512,6 +513,30 @@ PARAMS:
 Response - 200
 
 If the Response is 200 it will return the xml file code digits 
+
+POST: `/api/submit-csv/`
+
+Request body
+
+```json
+ {
+    "page_link": "https://ineuron.ai/contact-us",
+ }
+```
+
+Note:
+This endpoint api is used to SUBMIT the csv excel form file extracted from downloading the contact-us csv file
+
+
+Response - 200
+
+```json
+   {
+    "success": [
+        "Form 1 submitted successfully."
+    ]
+}
+```
 
 
 ### Technologies Used
