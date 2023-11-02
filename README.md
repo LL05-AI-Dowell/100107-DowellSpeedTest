@@ -434,7 +434,7 @@ Request body
 
 ```json
     {
-        "page_link": "https://www.sstream.co.ke"
+        "page_link": "https://ineuron.ai/contact-us"
     }
 ```
 
@@ -444,13 +444,23 @@ This endpoint api is used to extract contact-us-api of the page_link provided
 Response - 200
 
 ```json
-    {
-    "name": "text",
-    "email": "email",
-    "subject": "text",
-    "message": "textarea",
-    "submit": "submit"
-}
+[
+      {
+            "form_index": 0,
+            "name": "text",
+            "email": "email",
+            "tel": "tel",
+            "message": "textarea"
+      },
+     {
+            "form_index": 1,
+            "name": "text",
+            "orgName": "text",
+            "email": "email",
+            "tel": "tel",
+            "message": "textarea"
+     }
+]
 ```
 
 POST: `/api/submit-contact-form/`
@@ -458,15 +468,18 @@ POST: `/api/submit-contact-form/`
 Request body
 
 ```json
-    {
-    "contact_us_link": "https://preview.colorlib.com/theme/bootstrap/contact-form-01/",
-    "form_data": {
-        "name": "Yugene",
-        "email": "eugene@email.com",
-        "subject": "Your Subject",
-        "message": "Your Message",
-        "null": "submit"
-    }
+ {
+    "page_link": "https://giantmillers.co.ke/contact/",
+    "form_data": [
+        {
+            "form_index": 1,
+            "your-name": "John Namu",
+            "your-email": "namu@gmail.com",
+            "phonenumber": "+254743923232",
+            "your-subject": "Maize",
+            "your-message": "Maize Meal"
+        }
+    ]
 }
 ```
 
