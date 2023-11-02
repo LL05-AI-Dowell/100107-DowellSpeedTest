@@ -7,16 +7,12 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 from utils.helper import cleanUrl
-
-
-from .serializers import ContactInfoRequestSerializer, SubmitFileSerializer, SubmitFormSerializer, WebsiteInfoRequestSerializer
+from .serializers import PublicContactInfoRequestSerializer, SubmitFileSerializer, SubmitFormSerializer, WebsiteInfoRequestSerializer
 from django.views.decorators.csrf import csrf_exempt
-
 
 from utils.scraper import WebsiteInfoScraper
 from utils.requests import WebsiteInfoRequest
 from utils.misc import INFO_REQUEST_FORMAT
-
 
 
 class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
@@ -50,34 +46,25 @@ def request_format_api_view(request, *args, **kwargs):
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-website_info_extraction_api_view = WebsiteInfoExtractionAPIView.as_view()
 
-
-class ContactUsAPI(generics.GenericAPIView):
-    serializer_class = ContactInfoRequestSerializer
+class ContactUsFormExtractorAPI(generics.GenericAPIView):
+    serializer_class = PublicContactInfoRequestSerializer
     queryset = []
 
     def post(self, request, *args, **kwargs):
-
-        try:
-            serializer = self.get_serializer(data=request.data)
-            if serializer.is_valid(raise_exception=True):
-                contact_us_url = serializer.data.get("page_link")
-                # validated_data = serializer.validated_data
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            contact_us_url = serializer.data.get("page_link")
+            # validated_data = serializer.validated_data
+            try:
                 web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
                 response_dict = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
-
-                # print(response_dict)
-
-                # if response_dict:
                 return Response(response_dict, status=status.HTTP_200_OK)
-                # return Response("Error" , status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"error": f"{e}"})
+            except Exception as e:
+                return Response({"error": f"{e}"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     
-
-
 
 @csrf_exempt
 @api_view(['POST'])

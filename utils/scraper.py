@@ -419,7 +419,7 @@ class WebsiteInfoScraper:
                 if form_data:
                     return form_data
                 else:
-                    return "No Form Fields found on the Contact Us Form."
+                    raise Exception("No Form Fields found on the Contact Us Form.")
                 
             # If there are multiple forms, return a list of forms
             elif len(form_elements) > 1:
@@ -439,9 +439,9 @@ class WebsiteInfoScraper:
                 if unique_form_data_list:
                     return unique_form_data_list
                 else:
-                    return "No Form Fields found on the Contact Us Forms."
+                    raise Exception("No Form Fields found on the Contact Us Forms.")
             else:
-                return "Form(s) not found on the Contact Us page"
+                raise Exception("Form(s) not found on the Contact Us page")
         except Exception as e:
             raise Exception(f"An error occurred: {str(e)}")
         

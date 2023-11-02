@@ -1,10 +1,11 @@
 from django.urls import path
 
-from . import views
+from .views import WebsiteInfoExtractionAPIView, PrivateContactUsFormExtractorAPI, request_format_api_view
 
-# app_name = "api"
 
 urlpatterns = [
-    path('website-info-extractor/', views.website_info_extraction_api_view, name='info-extraction-api'),
-    path('website-info-extractor/request-format/', views.request_format_api_view, name='info-extraction-request-format-api')
+    path('website-info-extractor/', WebsiteInfoExtractionAPIView.as_view(), name='info-extraction-api'),
+    path('website-info-extractor/request-format/', request_format_api_view, name='info-extraction-request-format-api'),
+    path('contact-us-extractor/', PrivateContactUsFormExtractorAPI.as_view(), name='contact-us-extractor'),
+
 ]

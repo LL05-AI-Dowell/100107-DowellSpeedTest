@@ -4,7 +4,8 @@ from rest_framework.response import Response
 
 
 from utils.requests import WebsiteInfoRequest
-from .serializers import WebsiteInfoRequestSerializer
+from utils.scraper import WebsiteInfoScraper
+from .serializers import PrivateContactInfoRequestSerializer, WebsiteInfoRequestSerializer
 from utils.misc import INFO_REQUEST_FORMAT
 from utils.helper import processApikey
 
@@ -65,4 +66,43 @@ def request_format_api_view(request, *args, **kwargs):
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-website_info_extraction_api_view = WebsiteInfoExtractionAPIView.as_view()
+
+class PrivateContactUsFormExtractorAPI(generics.GenericAPIView):
+    serializer_class = PrivateContactInfoRequestSerializer
+    queryset = []
+
+    def post(self, request, *args, **kwargs):
+
+        # try:
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            contact_us_url = serializer.data.get("page_link")
+            
+            validated_data = serializer.validated_data
+            api_key = validated_data.pop('api_key')
+        
+            # Call the processApikey function to validate the API key
+            api_key_response = processApikey(api_key)
+            
+            if api_key_response.get('success'):
+
+                try:
+                    web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
+                    response_dict = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
+                    return Response(response_dict, status=status.HTTP_200_OK)
+                except Exception as e:
+                    return Response({"error": f"{e}"}, status=status.HTTP_400_BAD_REQUEST)
+                    
+            else:
+                return Response(
+                    {
+                        "success": False,
+                        "message": api_key_response.get("message")
+                    }, 
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+                    
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # except Exception as e:
+        #     return Response({"error": f"{e}"}, status=status.HTTP_400_BAD_REQUEST)
+    
