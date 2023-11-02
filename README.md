@@ -56,12 +56,13 @@ python3 manage.py runserver
 
 | HTTP Verbs | Endpoints                      | Action                                               |
 |------------|--------------------------------|------------------------------------------------------|
-| POST       | api/website-info-extractor/    | To get meta_data by passing the web url          |
-| POST       | api/v1/website-info-extractor/ | To Get verified and unverifed emails Generated.                     |
+| POST       | api/website-info-extractor/    | To get meta_data by passing the web url              |
+| POST       | api/v1/website-info-extractor/ | To Get verified and unverifed emails Generated.      |
 | POST       | api/contact-us-extractor/      | To retrieve the conctact-us-page
  Created     |
 | POST       | api/v1/submit-contact-form/    | To Send data to contact-us-page 
 |
+| GET        |/api/download-csv/              | To download the excel file                            |   
 
 
 ##  Endpoints Definition(Request - Response)
@@ -496,7 +497,21 @@ Response - 200
     ]
 }
 ```
+POST:`/api/download-csv/?web_url=https://ineuron.ai/contact-us&file_type=xlsx`
 
+Note:
+This endpoint api is used to Download data to the contact us page of the given url
+
+PARAMS: 
+```
+{
+    web_url : "https://ineuron.ai/contact-us"
+    file_type : xlsx | csv
+}
+```
+Response - 200
+
+If the Response is 200 it will return the xml file code digits 
 
 
 ### Technologies Used
