@@ -31,3 +31,7 @@ class ContactInfoRequestSerializer(serializers.Serializer):
 class SubmitFormSerializer(serializers.Serializer):
     page_link = serializers.URLField()
     form_data = serializers.ListField()
+
+class SubmitFileSerializer(serializers.Serializer):
+    page_link = serializers.URLField()
+    file = serializers.FileField()

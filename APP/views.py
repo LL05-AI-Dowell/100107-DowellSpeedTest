@@ -1,9 +1,15 @@
+from io import BytesIO
+import logging
+from django.http import HttpResponse
+import openpyxl
 from rest_framework import generics, status, decorators
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
+from utils.helper import cleanUrl
 
-from .serializers import ContactInfoRequestSerializer, SubmitFormSerializer, WebsiteInfoRequestSerializer
+
+from .serializers import ContactInfoRequestSerializer, SubmitFileSerializer, SubmitFormSerializer, WebsiteInfoRequestSerializer
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -50,20 +56,25 @@ website_info_extraction_api_view = WebsiteInfoExtractionAPIView.as_view()
 class ContactUsAPI(generics.GenericAPIView):
     serializer_class = ContactInfoRequestSerializer
     queryset = []
+
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            contact_us_url = serializer.data.get("page_link")
-            # validated_data = serializer.validated_data
-            web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
-            response_dict = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
 
-            # print(response_dict)
+        try:
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                contact_us_url = serializer.data.get("page_link")
+                # validated_data = serializer.validated_data
+                web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
+                response_dict = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
 
-            # if response_dict:
-            return Response(response_dict, status=status.HTTP_200_OK)
-            # return Response("Error" , status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                # print(response_dict)
+
+                # if response_dict:
+                return Response(response_dict, status=status.HTTP_200_OK)
+                # return Response("Error" , status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": f"{e}"})
     
 
 
@@ -86,3 +97,47 @@ def submit_contact_form(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=400)
+    
+@csrf_exempt
+@api_view(['POST'])
+def submit_contact_form_excel(request):
+    try: 
+        contact_us_link = request.data.get("page_link")
+        file = request.FILES.get("file")
+
+        serializer = SubmitFileSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            # initialize scraper
+            scraper = WebsiteInfoScraper()
+            # extract form data from excel file
+            extracted_data = scraper.extract_excel_data(file)
+            # submit form data
+            print(extracted_data)
+            post_form = scraper.submit_contact_form_selenium(contact_us_link, extracted_data)
+            return Response({"success": post_form}, status=200)
+        return Response(serializer.errors)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
+    
+# @csrf_exempt
+@api_view(['GET'])
+def download_csv_form(request):
+    web_url = request.GET.get("web_url")
+    file_type = request.GET.get("file_type")
+
+    if not web_url:
+        return Response({"error": "web_url is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        # Initialize your web scraper
+        scraper = WebsiteInfoScraper()
+        excel_data = scraper.save_form_data_to_excel(web_url, file_type=file_type)
+        file_name = cleanUrl(web_url)
+        if excel_data:
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = f'attachment; filename="{file_name}.{file_type}"'
+            response.write(excel_data)
+            return response
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
