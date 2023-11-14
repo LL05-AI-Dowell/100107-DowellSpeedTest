@@ -1,36 +1,35 @@
 # 100107-DowellEmailExtractor
 
 ## Summary
-This project involves the Scrapping web_urls through an API using 
+
+This project involves the Scrapping web_urls through an API using
 a scrapper library to extact infomation within the different website
 
  The API supports the Extaction data
-with various options such as getting the meta_data which includes 
-the page_urls,phone_numbers,socil_media_links, name , logos, 
+with various options such as getting the meta_data which includes
+the page_urls,phone_numbers,socil_media_links, name , logos,
 company_name,emails found and the website_url
 
-Clients can Extract data by providing a weburl, 
- The API will return an extracted data with all metadata 
+Clients can Extract data by providing a weburl,
+ The API will return an extracted data with all metadata
 
 The API also supports getting verified or unverified emails by passing
 the apikey alongside getting all metadata of the site
 
-Overall, this API provides a convenient way for clients to get data 
+Overall, this API provides a convenient way for clients to get data
 of any site regardless of the web_url
-
-
 
 ## Prerequisites
 
 Before you begin, make sure you have the following software installed on your computer:
     .Python 3.7+
 
-## Step 1: Setting up the Django project in your local machine.
-    
+## Step 1: Setting up the Django project in your local machine
+
 Clone project by running the following command in your terminal:
 git clone `https://github.com/LL05-AI-Dowell/100107-DowellEmailExtractor.git`
 
-## Step 2: Run the Project in your local environment.
+## Step 2: Run the Project in your local environment
 
 - Get into the projects directory by running:
 cd /100107-DowellEmailExtractor
@@ -40,33 +39,28 @@ cd /100107-DowellEmailExtractor
 - python3 -m venv venve
 source venve/bin/activate - linux
 
-
 - Install the requirements
 pip install -r requirements.txt
 
 - Run the project:
 python3 manage.py runserver
 
-## API Documentation 
+## API Documentation
 
-## BASE_URL 
+## BASE_URL
+
 `https://www.uxlive.me/`
-
-
 
 | HTTP Verbs | Endpoints                      | Action                                               |
 |------------|--------------------------------|------------------------------------------------------|
 | POST       | api/website-info-extractor/    | To get meta_data by passing the web url              |
 | POST       | api/v1/website-info-extractor/ | To Get verified and unverifed emails Generated.      |
-| POST       | api/contact-us-extractor/      | To retrieve the conctact-us-page
- Created     |
-| POST       | api/v1/submit-contact-form/    | To Send data to contact-us-page 
-|
-| GET        | api/download-csv/              | To download the excel file                           |   
+| POST       | api/contact-us-extractor/      | To retrieve the conctact-us-page Created             |
+| POST       | api/submit-contact-form/       | To Send data to contact-us-page
+| GET        | api/download-csv/              | To download the excel file                           |
 | POST       | api/submit-csv/                | To submit the csv file                               |
 
-
-##  Endpoints Definition(Request - Response)
+## Endpoints Definition(Request - Response)
 
 ## Extract metadata by scrapping
 
@@ -120,12 +114,13 @@ Request Body
     }
 }
 ```
+
 Note:
 
 This endpoint is used to extract infomation of the given url and return a response
 if the response is 200 .This does not mandate implementation of api-key
 
-Response - 200 
+Response - 200
 
 ```json
     {
@@ -300,12 +295,13 @@ Request Body
     }
 }
 ```
+
 Note:
 
 This endpoint is used to extract infomation of the given url and api-key and return a response
 if the response is 200 .This does prompt mandate implementation of api-key
 
-Response - 200 
+Response - 200
 
 ```json
     {
@@ -429,7 +425,6 @@ Response - 200
 }
 ```
 
-
 POST: `/api/contact-us-extractor/`
 
 Request body
@@ -488,7 +483,6 @@ Request body
 Note:
 This endpoint api is used to POST data to the contact us page of the given url
 
-
 Response - 200
 
 ```json
@@ -498,21 +492,24 @@ Response - 200
     ]
 }
 ```
+
 POST:`/api/download-csv/?web_url=https://ineuron.ai/contact-us&file_type=xlsx`
 
 Note:
 This endpoint api is used to Download data to the contact us page of the given url
 
-PARAMS: 
+PARAMS:
+
+```json
+    {
+        web_url : "https://ineuron.ai/contact-us"
+        file_type : xlsx | csv
+    }
 ```
-{
-    web_url : "https://ineuron.ai/contact-us"
-    file_type : xlsx | csv
-}
-```
+
 Response - 200
 
-If the Response is 200 it will return the xml file code digits 
+If the Response is 200 it will return the xml file code digits
 
 POST: `/api/submit-csv/`
 
@@ -527,7 +524,6 @@ Request body
 Note:
 This endpoint api is used to SUBMIT the csv excel form file extracted from downloading the contact-us csv file
 
-
 Response - 200
 
 ```json
@@ -537,7 +533,6 @@ Response - 200
     ]
 }
 ```
-
 
 ### Technologies Used
 
@@ -555,4 +550,3 @@ Response - 200
 
 This project is available for use under
 the [Apache](https://github.com/LL05-AI-Dowell/100107-DowellEmailExtractor.git0/blob/main/LICENSE) License.
-

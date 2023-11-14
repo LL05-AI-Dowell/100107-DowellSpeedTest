@@ -279,6 +279,9 @@ pyrightconfig.json
 # Built Visual Studio Code Extensions
 *.vsix
 
+# node modules
+.nano.save
+
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
