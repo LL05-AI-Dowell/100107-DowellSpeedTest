@@ -401,7 +401,6 @@ class WebsiteInfoScraper:
 
         return form_data
     
-
     def scrape_contact_us_page(self, web_url):
         try:
             soup = self.get_page(web_url)
@@ -410,7 +409,7 @@ class WebsiteInfoScraper:
             html_str = soup.prettify()
             with open("soup.html", "w", encoding="utf-8") as file:
                 file.write(html_str)
-                
+
             form_elements = soup.find_all('form')
 
             # If there's only one form, return a single dictionary
@@ -420,33 +419,90 @@ class WebsiteInfoScraper:
                     return form_data
                 else:
                     raise Exception("No Form Fields found on the Contact Us Form.")
-                
-            # If there are multiple forms, return a list of forms
+
+            # If there are multiple forms, merge common fields
             elif len(form_elements) > 1:
-
                 form_data_list = [self.extract_form_data(form) for form in form_elements]
+                
 
-                # Append an index to each form data dictionary
-                form_data_list_with_index = [{"form_index": index, **data} for index, data in enumerate(form_data_list)]
+                # Merge common fields
+                common_fields = self.merge_common_fields(form_data_list)
 
-                # Remove duplicates while preserving the index
-                unique_form_data_list = []
-
-                for data in form_data_list_with_index:
-                    if data not in unique_form_data_list:
-                        unique_form_data_list.append(data)
-                    
-                if unique_form_data_list:
-                    return unique_form_data_list
+                if common_fields:
+                    return common_fields
                 else:
-                    raise Exception("No Form Fields found on the Contact Us Forms.")
+                    # If there are no common fields, return the original response
+                    return form_data_list
             else:
                 raise Exception("Form(s) not found on the Contact Us page")
         except Exception as e:
             raise Exception(f"An error occurred: {str(e)}")
-        
+
         finally:
             self.browser.quit()
+    print("EEEEEEEEEEE")
+    def merge_common_fields(self, form_data_list):
+        common_fields = {}
+
+        for form_data in form_data_list:
+            print("Form Data:", form_data)
+            for field_name, field_type in form_data.items():
+                if field_name not in common_fields:
+                    common_fields[field_name] = field_type
+                elif common_fields[field_name] != field_type:
+                    # If a field has different types, ignore it
+                    common_fields.pop(field_name, None)
+
+        print("KWKWKWKKW")
+        print("Merged Common Fields:", common_fields)
+        return common_fields if common_fields else None
+
+
+    # def scrape_contact_us_page(self, web_url):
+    #     try:
+    #         soup = self.get_page(web_url)
+
+    #         # for debugging purposes
+    #         html_str = soup.prettify()
+    #         with open("soup.html", "w", encoding="utf-8") as file:
+    #             file.write(html_str)
+                
+    #         form_elements = soup.find_all('form')
+
+    #         # If there's only one form, return a single dictionary
+    #         if len(form_elements) == 1:
+    #             form_data = self.extract_form_data(form_elements[0])
+    #             if form_data:
+    #                 return form_data
+    #             else:
+    #                 raise Exception("No Form Fields found on the Contact Us Form.")
+                
+    #         # If there are multiple forms, return a list of forms
+    #         elif len(form_elements) > 1:
+
+    #             form_data_list = [self.extract_form_data(form) for form in form_elements]
+
+    #             # Append an index to each form data dictionary
+    #             form_data_list_with_index = [{"form_index": index, **data} for index, data in enumerate(form_data_list)]
+
+    #             # Remove duplicates while preserving the index
+    #             unique_form_data_list = []
+
+    #             for data in form_data_list_with_index:
+    #                 if data not in unique_form_data_list:
+    #                     unique_form_data_list.append(data)
+                    
+    #             if unique_form_data_list:
+    #                 return unique_form_data_list
+    #             else:
+    #                 raise Exception("No Form Fields found on the Contact Us Forms.")
+    #         else:
+    #             raise Exception("Form(s) not found on the Contact Us page")
+    #     except Exception as e:
+    #         raise Exception(f"An error occurred: {str(e)}")
+        
+    #     finally:
+    #         self.browser.quit()
             
 
     def save_form_data_to_excel(self, web_url, file_type):
