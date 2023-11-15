@@ -149,7 +149,9 @@ class WebsiteInfoScraper:
 
         :return: A list of urls of the links found.
         """
-        return self.engine.find_links(url=self.target, depth=self.maximum_search_depth)
+        links = self.engine.find_links(url=self.target, depth=self.maximum_search_depth)
+        links = [link.replace(':///', '://') for link in links]
+        return links
 
 
     def find_website_logos(self):
@@ -195,6 +197,7 @@ class WebsiteInfoScraper:
             url=base_url,
             depth=self.maximum_search_depth
         )
+        links = [link.replace(':///', '://') for link in links]
         # Try and find a close match
         urls = {unquote_plus(link) : link for link in links}
         matches = get_close_matches(page_name.lower(), urls.keys(), n=len(urls)//2 or 1, cutoff=0.5)

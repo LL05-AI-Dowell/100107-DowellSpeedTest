@@ -24,8 +24,8 @@ class WebsiteInfoRequestSerializer(serializers.Serializer):
 
 
 class PublicContactInfoRequestSerializer(serializers.Serializer):
-    page_links = serializers.ListField(child=serializers.URLField(validators=[URLValidator]), required=True)
-
+    # page_links = serializers.ListField(child=serializers.URLField(validators=[URLValidator]), required=True)
+    page_link = serializers.URLField()
 class SubmitFormSerializer(serializers.Serializer):
     page_link = serializers.URLField()
     form_data = serializers.ListField()
