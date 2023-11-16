@@ -405,11 +405,6 @@ class WebsiteInfoScraper:
         try:
             soup = self.get_page(web_url)
 
-            # for debugging purposes
-            html_str = soup.prettify()
-            with open("soup.html", "w", encoding="utf-8") as file:
-                file.write(html_str)
-
             form_elements = soup.find_all('form')
 
             # If there's only one form, return a single dictionary
@@ -423,7 +418,6 @@ class WebsiteInfoScraper:
             # If there are multiple forms, merge common fields
             elif len(form_elements) > 1:
                 form_data_list = [self.extract_form_data(form) for form in form_elements]
-                
 
                 # Merge common fields
                 common_fields = self.merge_common_fields(form_data_list)
@@ -437,7 +431,6 @@ class WebsiteInfoScraper:
                 raise Exception("Form(s) not found on the Contact Us page")
         except Exception as e:
             raise Exception(f"An error occurred: {str(e)}")
-
         finally:
             self.browser.quit()
     def merge_common_fields(self, form_data_list):
