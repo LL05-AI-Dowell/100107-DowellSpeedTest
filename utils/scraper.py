@@ -440,21 +440,20 @@ class WebsiteInfoScraper:
 
         finally:
             self.browser.quit()
-    print("EEEEEEEEEEE")
     def merge_common_fields(self, form_data_list):
         common_fields = {}
 
         for form_data in form_data_list:
-            print("Form Data:", form_data)
             for field_name, field_type in form_data.items():
                 if field_name not in common_fields:
-                    common_fields[field_name] = field_type
-                elif common_fields[field_name] != field_type:
-                    # If a field has different types, ignore it
-                    common_fields.pop(field_name, None)
+                    common_fields[field_name] = set([field_type])
+                else:
+                    common_fields[field_name].add(field_type)
 
-        print("KWKWKWKKW")
-        print("Merged Common Fields:", common_fields)
+        # Filter out fields with different types
+        common_fields = {name: types.pop() for name, types in common_fields.items() if len(types) == 1}
+
+        # If there are common fields, return them directly
         return common_fields if common_fields else None
 
 
