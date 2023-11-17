@@ -243,7 +243,7 @@ class codeqr(APIView):
         elif user_id:
             field = {"user_id": user_id}
         else:
-            return Response({"error": "Pass company_id or user_id as querry parameter"}, status=404)
+            return Response({"error": "Pass company_id or user_id as query parameter"}, status=404)
         
         # update_field = {"status": "nothing to update"}
         response = dowellconnection(*qrcode_management, "fetch", field, {})
