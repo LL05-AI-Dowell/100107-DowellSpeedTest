@@ -91,7 +91,7 @@ class ContactUsFormExtractorAPI(generics.GenericAPIView):
 @api_view(['POST'])
 def submit_contact_form(request):
     try:
-        contact_us_link = request.data.get("page_link")
+        contact_us_links = request.data.get("page_links")
         form_data = request.data.get("form_data")
 
         # initialize scraper
@@ -99,7 +99,7 @@ def submit_contact_form(request):
 
         if serializer.is_valid(raise_exception=True):
             scraper = WebsiteInfoScraper()
-            response_data = scraper.submit_contact_form_selenium(contact_us_link, form_data)
+            response_data = scraper.submit_contact_form_selenium(contact_us_links, form_data)
             return Response({"success": response_data}, status=200)
         return Response(serializer.errors)
 

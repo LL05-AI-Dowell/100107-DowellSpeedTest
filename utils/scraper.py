@@ -1,6 +1,7 @@
 import csv
 from io import BytesIO
 import io
+import time
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -55,7 +56,7 @@ class WebsiteInfoScraper:
         self.browserProfile = webdriver.ChromeOptions()
         
         self.browserProfile.add_argument("--no-sandbox")
-        self.browserProfile.add_argument("--headless")  # Run in headless mode
+        # self.browserProfile.add_argument("--headless")  # Run in headless mode
         self.browserProfile.add_argument("--disable-gpu")
         # self.browserProfile.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
         # self.browserProfile.add_argument("--disable-blink-features=AutomationControlled") 
@@ -530,46 +531,44 @@ class WebsiteInfoScraper:
             raise Exception(f"Error extracting data from XLSX file: {e}")
 
 
-    def submit_contact_form_selenium(self, contact_us_link, form_data_list):
+    def submit_contact_form_selenium(self, contact_us_links, form_data_list):
         try:
             # Open the contact_us_link
-            self.browser.get(contact_us_link)
-            WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
-            
-            
-            form_elements = self.browser.find_elements(By.TAG_NAME, 'form')
-            # logging.info(form_elements)
             response_data = []
+            successful_submissions = 0
 
-            for form_data in form_data_list:
-                
-                # form_index = form_data.get("form_index", 0)  # Default to 0 if "index" is not present
-                
-                for form in form_elements:
+            for contact_us_link in contact_us_links:
+                self.browser.get(contact_us_link)
+                WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
+                form_elements = self.browser.find_elements(By.TAG_NAME, 'form')
 
-                    for field_name, value in form_data.items():
-                        try:
-                            input_field = form.find_element(By.NAME, field_name)
-                        except NoSuchElementException:
+                for form_data in form_data_list:
+                   
+                    for form in form_elements:
+                        for field_name, value in form_data.items():
                             try:
-                                input_field = form.find_element(By.ID, field_name)
+                                input_field = form.find_element(By.NAME, field_name)
                             except NoSuchElementException:
-                                # Log a message that the field is not found in the current form
-                                logging.warning(f"Field {field_name} not found in form")
-                                continue  # Skip to the next iteration if the field is not found
-
-                        input_field.send_keys(value)
-
-                    try:
-                        form.submit()
-                        response = f"Form submitted successfully."
-                        response_data.append(response)
-                    except Exception as e:
-                        response = f"Error submitting form {str(e)}"
-                        response_data.append({"error": response})
-                else:
-                    response_data.append("Form index out of range")
-
+                                try:
+                                    input_field = form.find_element(By.ID, field_name)
+                                except NoSuchElementException:
+                                    continue  # Skip to the next iteration if the field is not found
+                            
+                            try:
+                                input_field.send_keys(value)
+                            except:
+                                continue
+                        try:
+                            time.sleep(4)
+                            form.submit()
+                            successful_submissions += 1
+                            response = f"Form {successful_submissions} submitted successfully."
+                            response_data.append(response)
+                        except Exception as e:
+                            response = f"Error submitting form {str(e)}"
+                            response_data.append({"error": response})
+                            continue
+            time.sleep(4)
             # Close the WebDriver outside the loop
             self.browser.quit()
 
@@ -577,56 +576,4 @@ class WebsiteInfoScraper:
         except Exception as e:
             raise Exception(e)
             
-    # def submit_contact_form_selenium(self, contact_us_link, form_data_list):
-    #     try:
-    #         # Open the contact_us_link
-    #         self.browser.get(contact_us_link)
-    #         WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
-            
-    #         form_elements = self.browser.find_elements(By.TAG_NAME, 'form')
-    #         response_data = []
-
-    #         for form_data in form_data_list:
-    #             found = False  # Flag to check if the form is found for the current field set
-
-    #             for form in form_elements:
-    #                 for field_name, value in form_data.items():
-    #                     if field_name != "form_index":
-    #                         try:
-    #                             input_field = form.find_element(By.NAME, field_name)
-    #                         except NoSuchElementException:
-    #                             try:
-    #                                 input_field = form.find_element(By.ID, field_name)
-    #                             except NoSuchElementException:
-    #                                 continue  # Skip to the next iteration if the field is not found
-
-    #                         input_field.send_keys(value)
-    #                         found = True  # Set the flag to true if the field is found in the current form
-    #                         # Check if the field is interactable
-    #                         # if input_field.is_displayed() and input_field.is_enabled():
-    #                         #     input_field.send_keys(value)
-    #                         # else:
-    #                         #     # Log a message that the field is non-interactive
-    #                         #     logging.warning(f"Field {field_name} is non-interactive in form {i}")
-
-    #                         # found = True  # Set the flag to true if the field is found in the current form
-
-    #                 if found:
-    #                     try:
-    #                         form.submit()
-    #                         response = f"Form submitted successfully."
-    #                         response_data.append(response)
-    #                     except Exception as e:
-    #                         response = f"Error submitting form: {str(e)}"
-    #                         response_data.append({"error": response})
-    #                      # Break out of the loop since the form has been processed
-
-    #             if not found:
-    #                 response_data.append("Fields not found in any form")
-
-    #         # Close the WebDriver outside the loop
-    #         self.browser.quit()
-
-    #         return response_data
-    #     except Exception as e:
-    #         raise Exception(e)
+    
