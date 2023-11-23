@@ -51,15 +51,28 @@ class ContactUsFormExtractorAPI(generics.GenericAPIView):
     serializer_class = PublicContactInfoRequestSerializer
     queryset = []
 
+
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            contact_us_url = serializer.validated_data.get("page_link")
-            
+            contact_us_urls = serializer.validated_data.get("page_links")
+
             try:
-                web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
-                response_dict = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
-                return Response(response_dict, status=status.HTTP_200_OK)
+                response_dict = {}
+                for i, contact_us_url in enumerate(contact_us_urls):
+                    web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
+                    response_dict[i] = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
+
+                merged_object = {}
+
+                for key, value in response_dict.items():
+                    if isinstance(value, list):
+                        for sub_dict in value:
+                            merged_object.update(sub_dict)
+                    else:
+                        merged_object.update(value)
+
+                return Response(merged_object, status=status.HTTP_200_OK)
             except Exception as e:
                 return Response({"error": f"{e}"}, status=status.HTTP_400_BAD_REQUEST)
             # try:
