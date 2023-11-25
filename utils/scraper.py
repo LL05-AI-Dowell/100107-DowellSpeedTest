@@ -1,10 +1,13 @@
 import csv
 from io import BytesIO
 import io
+import time
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
+
 import logging
 
 import re
@@ -149,7 +152,9 @@ class WebsiteInfoScraper:
 
         :return: A list of urls of the links found.
         """
-        return self.engine.find_links(url=self.target, depth=self.maximum_search_depth)
+        links = self.engine.find_links(url=self.target, depth=self.maximum_search_depth)
+        links = [link.replace(':///', '://') for link in links]
+        return links
 
 
     def find_website_logos(self):
@@ -195,6 +200,7 @@ class WebsiteInfoScraper:
             url=base_url,
             depth=self.maximum_search_depth
         )
+        links = [link.replace(':///', '://') for link in links]
         # Try and find a close match
         urls = {unquote_plus(link) : link for link in links}
         matches = get_close_matches(page_name.lower(), urls.keys(), n=len(urls)//2 or 1, cutoff=0.5)
@@ -400,54 +406,7 @@ class WebsiteInfoScraper:
                 form_data[field_type] = field_type
 
         return form_data
-    
-    # def scrape_contact_us_page(self, web_url):
-    #     try:
-    #         soup = self.get_page(web_url)
 
-    #         form_elements = soup.find_all('form')
-
-    #         # If there's only one form, return a single dictionary
-    #         if len(form_elements) == 1:
-    #             form_data = self.extract_form_data(form_elements[0])
-    #             if form_data:
-    #                 return form_data
-    #             else:
-    #                 raise Exception("No Form Fields found on the Contact Us Form.")
-
-    #         # If there are multiple forms, merge common fields
-    #         elif len(form_elements) > 1:
-    #             form_data_list = [self.extract_form_data(form) for form in form_elements]
-
-    #             # Merge common fields
-    #             common_fields = self.merge_common_fields(form_data_list)
-
-    #             if common_fields:
-    #                 return common_fields
-    #             else:
-    #                 # If there are no common fields, return the original response
-    #                 return form_data_list
-    #         else:
-    #             raise Exception("Form(s) not found on the Contact Us page")
-    #     except Exception as e:
-    #         raise Exception(f"An error occurred: {str(e)}")
-    #     finally:
-    #         self.browser.quit()
-    # def merge_common_fields(self, form_data_list):
-    #     common_fields = {}
-
-    #     for form_data in form_data_list:
-    #         for field_name, field_type in form_data.items():
-    #             if field_name not in common_fields:
-    #                 common_fields[field_name] = set([field_type])
-    #             else:
-    #                 common_fields[field_name].add(field_type)
-
-    #     # Filter out fields with different types
-    #     common_fields = {name: types.pop() for name, types in common_fields.items() if len(types) == 1}
-
-    #     # If there are common fields, return them directly
-    #     return common_fields if common_fields else None
  
     def scrape_contact_us_page(self, web_url):
         try:
@@ -474,12 +433,12 @@ class WebsiteInfoScraper:
                 form_data_list = [self.extract_form_data(form) for form in form_elements]
 
                 # Append an index to each form data dictionary
-                form_data_list_with_index = [{"form_index": index, **data} for index, data in enumerate(form_data_list)]
+                # form_data_list_with_index = [{"form_index": index, **data} for index, data in enumerate(form_data_list)]
 
                 # Remove duplicates while preserving the index
                 unique_form_data_list = []
 
-                for data in form_data_list_with_index:
+                for data in form_data_list:
                     if data not in unique_form_data_list:
                         unique_form_data_list.append(data)
                     
@@ -572,44 +531,49 @@ class WebsiteInfoScraper:
             raise Exception(f"Error extracting data from XLSX file: {e}")
 
 
-    def submit_contact_form_selenium(self, contact_us_link, form_data_list):
+    def submit_contact_form_selenium(self, contact_us_links, form_data_list):
         try:
             # Open the contact_us_link
-            self.browser.get(contact_us_link)
-            WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
-            
-            form_elements = self.browser.find_elements(By.TAG_NAME, 'form')
             response_data = []
+            successful_submissions = 0
 
-            for form_data in form_data_list:
-                form_index = form_data.get("form_index", 0)  # Default to 0 if "index" is not present
-                if form_index < len(form_elements):
-                    form = form_elements[form_index]
+            for contact_us_link in contact_us_links:
+                self.browser.get(contact_us_link)
+                WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
+                form_elements = self.browser.find_elements(By.TAG_NAME, 'form')
 
-                    for field_name, value in form_data.items():
-                        if field_name != "form_index":
-
+                for form_data in form_data_list:
+                   
+                    for form in form_elements:
+                        for field_name, value in form_data.items():
                             try:
-                                # logging.info(field_name)
                                 input_field = form.find_element(By.NAME, field_name)
+                            except NoSuchElementException:
+                                try:
+                                    input_field = form.find_element(By.ID, field_name)
+                                except NoSuchElementException:
+                                    continue  # Skip to the next iteration if the field is not found
+                            
+                            try:
                                 input_field.send_keys(value)
                             except:
-                                input_field = form.find_element(By.ID, field_name)
-                                input_field.send_keys(value)
-
-                    try:
-                        form.submit()
-                        response = f"Form {form_index + 1} submitted successfully."
-                        response_data.append(response)
-                    except Exception as e:
-                        response = f"Error submitting form {form_index + 1}: {str(e)}"
-                        response_data.append({"error": response})
-                else:
-                    response_data.append("Form index out of range")
-
+                                continue
+                        try:
+                            time.sleep(4)
+                            form.submit()
+                            successful_submissions += 1
+                            response = f"Form {successful_submissions} submitted successfully."
+                            response_data.append(response)
+                        except Exception as e:
+                            response = f"Error submitting form {str(e)}"
+                            response_data.append({"error": response})
+                            continue
+            time.sleep(4)
             # Close the WebDriver outside the loop
             self.browser.quit()
 
             return response_data
         except Exception as e:
             raise Exception(e)
+            
+    
