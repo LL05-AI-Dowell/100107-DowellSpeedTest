@@ -1,4 +1,5 @@
 from io import BytesIO
+import io
 import logging
 from django.http import HttpResponse
 import openpyxl
@@ -6,7 +7,7 @@ from rest_framework import generics, status, decorators
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from utils.helper import cleanUrl
+from utils.helper import cleanUrl, create_short_uuid
 from .serializers import PublicContactInfoRequestSerializer, SubmitFileSerializer, SubmitFormSerializer, WebsiteInfoRequestSerializer
 from django.views.decorators.csrf import csrf_exempt
 
@@ -52,7 +53,7 @@ class ContactUsFormExtractorAPI(generics.GenericAPIView):
     queryset = []
 
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             contact_us_urls = serializer.validated_data.get("page_links")
@@ -75,14 +76,6 @@ class ContactUsFormExtractorAPI(generics.GenericAPIView):
                 return Response(merged_object, status=status.HTTP_200_OK)
             except Exception as e:
                 return Response({"error": f"{e}"}, status=status.HTTP_400_BAD_REQUEST)
-            # try:
-            #     response_dict = {}
-            #     for contact_us_url in contact_us_urls:
-            #         web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
-            #         response_dict[contact_us_url] = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
-            #     return Response(response_dict, status=status.HTTP_200_OK)
-            # except Exception as e:
-            #     return Response({"error": f"{e}"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
@@ -110,8 +103,10 @@ def submit_contact_form(request):
 @api_view(['POST'])
 def submit_contact_form_excel(request):
     try: 
-        contact_us_link = request.data.get("page_link")
+        contact_us_links = request.data.get("page_links")
         file = request.FILES.get("file")
+
+        print(contact_us_links)
 
         serializer = SubmitFileSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -121,31 +116,53 @@ def submit_contact_form_excel(request):
             extracted_data = scraper.extract_excel_data(file)
             # submit form data
             print(extracted_data)
-            post_form = scraper.submit_contact_form_selenium(contact_us_link, extracted_data)
+            
+            post_form = scraper.submit_contact_form_selenium(contact_us_links, extracted_data)
             return Response({"success": post_form}, status=200)
         return Response(serializer.errors)
 
     except Exception as e:
         return Response({"error": str(e)}, status=400)
-    
-# @csrf_exempt
-@api_view(['GET'])
-def download_csv_form(request):
-    web_url = request.GET.get("web_url")
-    file_type = request.GET.get("file_type")
 
-    if not web_url:
-        return Response({"error": "web_url is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        # Initialize your web scraper
-        scraper = WebsiteInfoScraper()
-        excel_data = scraper.save_form_data_to_excel(web_url, file_type=file_type)
-        file_name = cleanUrl(web_url)
-        if excel_data:
-            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            response['Content-Disposition'] = f'attachment; filename="{file_name}.{file_type}"'
-            response.write(excel_data)
-            return response
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class DowloadExcelForm(generics.GenericAPIView):
+    serializer_class = PublicContactInfoRequestSerializer
+    queryset = []
+
+    def post(self, request):
+        file_type = request.GET.get("file_type")
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            contact_us_urls = serializer.validated_data.get("page_links")
+
+        if not contact_us_urls:
+            return Response({"error": "page_links is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            response_dict = {}
+            for i, contact_us_url in enumerate(contact_us_urls):
+                web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
+                response_dict[i] = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
+            
+            merged_object = {}
+
+            for key, value in response_dict.items():
+                if isinstance(value, list):
+                    for sub_dict in value:
+                        merged_object.update(sub_dict)
+                else:
+                    merged_object.update(value)
+
+            # Initialize your web scraper
+            scraper = WebsiteInfoScraper()
+            excel_data = scraper.save_form_data_to_excel(merged_object, file_type=file_type)
+            file_name = create_short_uuid()
+            if excel_data:
+                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = f'attachment; filename="{file_name}.{file_type}"'
+                response.write(excel_data)
+                return response
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

@@ -1,5 +1,8 @@
+import base64
 import json
 import re
+import time
+import uuid
 import requests
 from typing import Iterable, List
 from urllib.parse import urlparse
@@ -80,3 +83,16 @@ def cleanUrl(url):
     parsed_url = urlparse(url)
     cleaned_url = parsed_url.netloc
     return cleaned_url
+
+
+def create_short_uuid():
+    uuid_value = uuid.uuid4().bytes
+    base64_encoded = base64.urlsafe_b64encode(uuid_value).rstrip(b'=')
+
+    # Get the current timestamp (in seconds) and convert it to base64
+    current_timestamp = int(time.time())
+    timestamp_bytes = str(current_timestamp).encode('utf-8')
+    # timestamp_base64 = base64.urlsafe_b64encode(timestamp_bytes).rstrip(b'=')
+    # Combine the short UUID and timestamp component
+    combined_uuid = base64_encoded[:4] + base64_encoded[-4:]
+    return combined_uuid.decode('utf-8')  # Convert bytes back to string

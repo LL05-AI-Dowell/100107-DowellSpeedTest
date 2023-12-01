@@ -32,5 +32,5 @@ class SubmitFormSerializer(serializers.Serializer):
     form_data = serializers.ListField()
 
 class SubmitFileSerializer(serializers.Serializer):
-    page_link = serializers.URLField()
+    page_links = serializers.ListField(child=serializers.URLField(validators=[URLValidator]), required=True)
     file = serializers.FileField()

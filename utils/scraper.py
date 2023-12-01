@@ -455,12 +455,9 @@ class WebsiteInfoScraper:
             self.browser.quit()
             
 
-    def save_form_data_to_excel(self, web_url, file_type):
-        form_data = self.scrape_contact_us_page(web_url)
-        logging.info(form_data)
-
+    def save_form_data_to_excel(self, form_data, file_type):
         if not form_data:
-            exception = f"No form's found in {web_url}"
+            exception = f"No form's found"
             logging.warning(exception)
             raise Exception(exception)
 
@@ -489,22 +486,22 @@ class WebsiteInfoScraper:
 
             return output.getvalue()
 
-        # elif file_type == "csv":
-        #     output = io.StringIO()
+        elif file_type == "csv":
+            output = io.StringIO()
 
-        #     for index, data in enumerate(form_data, start=1):
-        #         csv_writer = csv.writer(output)
+            for index, data in enumerate(form_data, start=1):
+                csv_writer = csv.writer(output)
                 
-        #         # Write the CSV header
-        #         header = list(data.keys())
-        #         csv_writer.writerow(header)
+                # Write the CSV header
+                header = list(data.keys())
+                csv_writer.writerow(header)
                 
-        #         # Write the CSV data
-        #         csv_writer.writerow([data[key] for key in data.keys()])
+                # Write the CSV data
+                csv_writer.writerow([data[key] for key in data.keys()])
                 
-        #         output.write("\n")  # Add a newline to separate sheets
+                output.write("\n")  # Add a newline to separate sheets
 
-        #     return output.getvalue()
+            return output.getvalue()
 
         else:
             raise Exception("Unsupported file type. Please choose 'csv' or 'xlsx'.")

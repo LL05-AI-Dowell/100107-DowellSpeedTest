@@ -8,7 +8,8 @@ urlpatterns = [
     path('submit-contact-form/', submit_contact_form, name='submit_contact_form'),
     path('contact-us-extractor/', ContactUsFormExtractorAPI.as_view(), name='contact-us-extractor'),
 
-    path('download-csv/', views.download_csv_form, name='download_csv_form'),
+    path('download-csv/', views.DowloadExcelForm.as_view(), name='download_csv_form'),
+    # path('download-csv/', views.download_csv_form, name='download_csv_form'),
     path('submit-csv/', views.submit_contact_form_excel, name='submit_excel_file'),
 
     path('website-info-extractor/', WebsiteInfoExtractionAPIView.as_view(), name='info-extraction-api'),
