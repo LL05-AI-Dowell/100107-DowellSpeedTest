@@ -198,8 +198,11 @@ class WebsiteInfoScraper:
         # Implement logic to scrape links to individual product pages from the products_url
         soup = self.get_page(products_url)
 
-        # For example, let's assume product links are in anchor tags
-        product_links.extend([urljoin(products_url, a['href'].strip()) for a in soup.find_all('a', href=True)])
+        # Find all anchor tags within the "Our Solutions" page
+        anchor_tags = soup.find_all('a', href=True, class_='elementor-item')
+
+        # Extract links from anchor tags
+        product_links.extend([urljoin(products_url, a['href'].strip()) for a in anchor_tags])
 
         # Check if the extracted links are valid "products" pages and retrieve links from them
         for link in product_links.copy():
@@ -207,7 +210,6 @@ class WebsiteInfoScraper:
                 product_links.extend(self.process_products_page(link))
 
         return product_links
-
     # def process_products_page(self, products_url):
     #     """
     #     Process a "products" page and return links to individual product pages.
