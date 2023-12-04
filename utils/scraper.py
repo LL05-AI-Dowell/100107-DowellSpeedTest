@@ -14,7 +14,7 @@ import re
 from bs4 import BeautifulSoup
 from bs4_web_scraper.scraper import BS4WebScraper
 from urllib3.util import parse_url
-from urllib.parse import unquote_plus
+from urllib.parse import unquote_plus, urljoin
 from difflib import get_close_matches
 from concurrent.futures import ThreadPoolExecutor
 
@@ -154,7 +154,82 @@ class WebsiteInfoScraper:
         """
         links = self.engine.find_links(url=self.target, depth=self.maximum_search_depth)
         links = [link.replace(':///', '://') for link in links]
+
+        # Check if there is a "products" page among the links
+        # products_page = next((link for link in links if "products" in link.lower()), None)
+
+        # if products_page:
+        #     # If there is a "products" page, process it to get links to individual products
+        #     product_links = self.process_products_page(products_page)
+        #     links.extend(product_links)
+
         return links
+    
+
+    # def find_product_links(self, weburl):
+    #     """
+    #     Finds all the links on the website.
+
+    #     :return: A list of urls of the links found.
+    #     """
+    #     links = self.engine.find_links(url=weburl, depth=self.maximum_search_depth)
+    #     links = [link.replace(':///', '://') for link in links]
+
+    #     # Check if there is a "products" page among the links
+    #     products_page = next((link for link in links if "products" in link.lower()), None)
+
+    #     if products_page:
+    #         # If there is a "products" page, process it to get links to individual products
+    #         product_links = self.process_products_page(products_page)
+    #         links.extend(product_links)
+
+    #     return links
+
+
+    def process_products_page(self, products_url):
+        """
+        Process a "products" page and return links to individual product pages.
+
+        :param products_url: URL of the "products" page.
+        :return: Links to individual product pages.
+        """
+        product_links = []
+
+        # Implement logic to scrape links to individual product pages from the products_url
+        soup = self.get_page(products_url)
+
+        # For example, let's assume product links are in anchor tags
+        product_links.extend([urljoin(products_url, a['href'].strip()) for a in soup.find_all('a', href=True)])
+
+        # Check if the extracted links are valid "products" pages and retrieve links from them
+        for link in product_links.copy():
+            if "products" in link.lower():
+                product_links.extend(self.process_products_page(link))
+
+        return product_links
+
+    # def process_products_page(self, products_url):
+    #     """
+    #     Process a "products" page and return links to individual product pages.
+
+    #     :param products_url: URL of the "products" page.
+    #     :return: Links to individual product pages.
+    #     """
+    #     product_links = []
+
+    #     # Implement logic to scrape links to individual product pages from the products_url
+    #     soup = self.get_page(products_url)
+        
+    #     # # For example, let's assume product links are in anchor tags within a container with class "products-container"
+    #     # products_container = soup.find('div', class_='products-container')
+
+    #         # Extract links from anchor tags
+    #     product_links.extend([urljoin(products_url, a['href'].strip()) for a in soup.find_all('a', href=True)])
+
+    #     return product_links
+        
+
+    
 
 
     def find_website_logos(self):
@@ -329,6 +404,10 @@ class WebsiteInfoScraper:
         if isinstance(_s, str):
             return get_matches(_s)
         return { _s_ : get_matches(_s_) for _s_ in _s }
+    
+
+    # print("EEEEEEE")
+    # print(find_links_related_to)
 
 
     def find_all_social_media_links(self, platform_names: list[str] = None):
