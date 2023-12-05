@@ -115,8 +115,6 @@ def submit_contact_form_excel(request):
             # extract form data from excel file
             extracted_data = scraper.extract_excel_data(file)
             # submit form data
-            print(extracted_data)
-            
             post_form = scraper.submit_contact_form_selenium(contact_us_links, extracted_data)
             return Response({"success": post_form}, status=200)
         return Response(serializer.errors)
