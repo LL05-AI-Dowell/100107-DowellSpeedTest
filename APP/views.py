@@ -1,5 +1,6 @@
 from io import BytesIO
 import io
+import json
 import logging
 from django.http import HttpResponse
 import openpyxl
@@ -103,7 +104,7 @@ def submit_contact_form(request):
 @api_view(['POST'])
 def submit_contact_form_excel(request):
     try: 
-        contact_us_links = request.data.get("page_links")
+        contact_us_links = json.loads(request.data.get("page_links"))
         file = request.FILES.get("file")
 
         print(contact_us_links)
