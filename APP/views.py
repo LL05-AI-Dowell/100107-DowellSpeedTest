@@ -108,6 +108,9 @@ def submit_contact_form_excel(request):
 
         print(contact_us_links)
 
+        if not isinstance(contact_us_links, list):
+            return Response({"error": "page_links must be a list"}, status=400)
+
         serializer = SubmitFileSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             # initialize scraper
