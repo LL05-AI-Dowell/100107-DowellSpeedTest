@@ -3,7 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const DynamicForm = ({ formData, webUrl }) => {
+const DynamicForm = ({ formData, webUrl,email }) => {
   const [formValues, setFormValues] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -19,6 +19,35 @@ const DynamicForm = ({ formData, webUrl }) => {
 
     setFormValues(updatedFormValues);
   };
+
+
+// function to send extracted data to email
+const handleSendEmail = async (htmlContent) => {
+  try {
+    // setLoading(true);
+    const response = await axios.post(
+      `https://100085.pythonanywhere.com/api/email/`,
+      {
+        toname: "Dowell UX Living Lab",
+        // toemail: "dowell@dowellresearch.uk",
+        toemail: !email ? "dowell@dowellresearch.uk" : email,
+        subject: `${
+          email
+        } result from DoWell Website Crawler on ${new Date()}`,
+        email_content: htmlContent
+      }
+    );
+    // Set the emailSent state to true when the email is sent
+    
+    console.log(response);
+  } catch (error) {
+    toast.error(error ? error?.response?.data?.error : error?.message);
+     console.log(error)
+  }
+};
+ 
+
+
 
 
   const handleSubmit = (e) => {
@@ -38,6 +67,45 @@ const DynamicForm = ({ formData, webUrl }) => {
         setLoading(false);
         toast.success(JSON.stringify(response?.data?.success));
         console.log("Form data submitted successfully.");
+        
+      
+            
+
+        const htmlContent = `
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Dowell Website Crawler</title>
+          </head>
+          <body>
+            <div style="font-family: Helvetica, Arial, sans-serif; min-width: 100px; overflow: auto; line-height: 2">
+              <div style="margin: 50px auto; width: 70%; padding: 20px 0">
+                <div style="border-bottom: 1px solid #eee">
+                  <a href="#" style="font-size: 1.2em; color: #00466a; text-decoration: none; font-weight: 600">Dowell UX Living Lab</a>
+                </div>
+                <p style="font-size: 1.1em">Email : ${email}</p>
+                
+                <p style="font-size: 1.1em">Sent Datas</p> ${" "}
+                <ul>
+                  ${Object.entries(formValues)
+                    .map(
+                      ([name, value]) =>
+                        `<li key=${name}>${name} : ${value}</li>`
+                    )
+                    .join("")}
+                </ul>
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
+
+      handleSendEmail(htmlContent);
+      
+      
       })
       .catch((error) => {
         setLoading(false);

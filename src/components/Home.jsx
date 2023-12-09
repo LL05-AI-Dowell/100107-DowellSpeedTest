@@ -15,7 +15,7 @@ const Home = () => {
   const [link, setLink] = useState({});
   const [linksUrl,setLinksUrl]=useState([]);
   const links=linksUrl?.map(({item})=>item)
-
+  const [email,setEmail]=useState("");
   const handleScrapeForm = async () => {
     //delete id from the objects array and take the link 
   
@@ -130,16 +130,19 @@ const handleDeleteLink=(itemId)=>{
         <hr className="col-md-10 pb-3"/>
 
         {/* Email Extractor Title */}
-        <h1 className="text-center font-bold text-[#005734]">
+        <h1 className="text-center font-bold text-[#005734]" >
           {" "}
-          DoWell contact us Form Extractor{" "}
+          DoWell &quot;Contact Us Page&quot; Extractor{" "}
         </h1>
 
         {/*  About Email Extractor */}
         <p className="subTitle mt-5 mb-3">
           Introducing the ultimate form extraction and submission tool. Extract
           forms from any webpage instantly. Fill them out directly or download
-          as Excel for offline editing. Effortlessly submit forms at their
+          as Excel for offline editing.
+          <br/>
+          <br/>
+          Effortlessly submit forms at their
           original location. Simplify your form interaction today !
         </p>
 
@@ -170,6 +173,20 @@ const handleDeleteLink=(itemId)=>{
             Press enter or space after each entry.
           </div>
 
+          <div className="mb-3 flex bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:border-[#005734] w-full p-1.5">
+             <input
+                      type="email"
+                      className="flex-1 focus:outline-none"
+                      
+                      value={email}
+                      onChange={(e) =>setEmail(e.target.value)
+                      }
+            
+                      placeholder="enter your email (optional) "
+                    />
+                  </div>
+     
+     
           <div className="flex flex-row gap-2 justify-center">
             <button
               onClick={handleScrapeForm}
@@ -209,12 +226,12 @@ const handleDeleteLink=(itemId)=>{
               {Array.isArray(formData) ? (
                 formData.map((data, index) => (
                   <div key={index}>
-                    <DynamicForm formData={data} webUrl={links} />
+                    <DynamicForm formData={data} webUrl={links} email={email} />
                   </div>
                 ))
               ) : (
                 <div>
-                    <DynamicForm formData={formData} webUrl={links} />
+                    <DynamicForm formData={formData} webUrl={links} email={email } />
                 </div>
               )}
             </Accordion>
