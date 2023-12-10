@@ -28,9 +28,15 @@ const Home = () => {
         }
       );
 
-      setFormData(response?.data);
-      setLoadingCreate(false);
-      console.log("formData", formData)
+     
+
+    
+
+    response?.data && handleSendEmail(response.data);
+    setFormData(response?.data);
+    setLoadingCreate(false);
+    console.log("formData", formData)
+
     } catch (error) {
       setLoadingCreate(false);
       console.log(error);
@@ -115,6 +121,84 @@ const handleDeleteLink=(itemId)=>{
     }
   };
 
+//extract form data
+
+const extractFormData=(datas)=>{
+  
+  const extractedData=datas && 
+       Object?.keys(datas)?.map((fieldName) =>{
+             console.log(fieldName);
+          return  fieldName !== "submit" ? (datas[fieldName] !== "hidden" &&
+                  fieldName !== "form_index" && (fieldName ) ): ''
+                }).join('<br/>');
+   
+    return extractedData;
+  }
+    
+
+
+
+// function to send extracted data to email
+const handleSendEmail = async (datas) => {
+  try {
+    // setLoading(true);
+
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dowell Website Crawler</title>
+      </head>
+      <body>
+        <div style="font-family: Helvetica, Arial, sans-serif; min-width: 100px; overflow: auto; line-height: 2">
+          <div style="margin: 50px auto; width: 70%; padding: 20px 0">
+            <div style="border-bottom: 1px solid #eee">
+              <a href="#" style="font-size: 1.2em; color: #00466a; text-decoration: none; font-weight: 600">Dowell UX Living Lab</a>
+            </div>
+            <p style="font-size: 1.1em">Email : ${email}</p>
+            
+            <p style="font-size: 1.1em">Extracted Form Fields</p> ${" "}
+            <ul>
+              ${Array.isArray(datas) ? (
+                datas.map((data) => extractFormData(data)
+                ).join('\n'))
+               : (
+                extractFormData(datas)
+              )}
+            </ul>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+
+
+    const response = await axios.post(
+      `https://100085.pythonanywhere.com/api/email/`,
+      {
+        toname: "Dowell UX Living Lab",
+        // toemail: "dowell@dowellresearch.uk",
+        toemail: !email ? "dowell@dowellresearch.uk" : email,
+        subject: `${
+          email
+        } result from DoWell Website Crawler on ${new Date()}`,
+        email_content: htmlContent
+      }
+    );
+    // Set the emailSent state to true when the email is sent
+    
+    console.log(response);
+  } catch (error) {
+    toast.error(error ? error?.response?.data?.error : error?.message);
+     console.log(error)
+  }
+};
+
+
   return (
     <div className="page-container">
       <div className="mx-auto overflow-hidden max-w-[800px]">
@@ -173,16 +257,16 @@ const handleDeleteLink=(itemId)=>{
             Press enter or space after each entry.
           </div>
 
-          <div className="mb-3 flex bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:border-[#005734] w-full p-1.5">
+          <div tabIndex={0}  className="flex mb-3 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:border-[#005734] w-full p-2.5">
              <input
                       type="email"
-                      className="flex-1 focus:outline-none"
+                      className="flex-1 focus:outline-none "
                       
                       value={email}
                       onChange={(e) =>setEmail(e.target.value)
                       }
             
-                      placeholder="enter your email (optional) "
+                      placeholder="dowell@dowellresearch.uk "
                     />
                   </div>
      
