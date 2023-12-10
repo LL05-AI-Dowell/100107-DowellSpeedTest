@@ -202,9 +202,8 @@ const handleSendEmail = async (datas) => {
 
         {/*  About Email Extractor */}
         <p className="subTitle mt-5 mb-3">
-          Introducing the ultimate form extraction and submission tool. Extract
-          forms from any webpage instantly. Fill them out directly or download
-          as Excel for offline editing.
+        Introducing the ultimate &quot;contact  us&quot; form extraction and submission tool. Extract &quot;contact  us&quot; form from any webpage instantly. 
+        Fill it out directly or download as spreadsheet for offline editing. 
           <br/>
           <br/>
           Effortlessly submit forms at their
