@@ -16,6 +16,8 @@ const Home = () => {
   const [linksUrl,setLinksUrl]=useState([]);
   const links=linksUrl?.map(({item})=>item)
   const [email,setEmail]=useState("");
+
+
   const handleScrapeForm = async () => {
     //delete id from the objects array and take the link 
   
@@ -27,11 +29,6 @@ const Home = () => {
           page_links:links,
         }
       );
-
-     
-
-    
-
     response?.data && handleSendEmail(response.data);
     setFormData(response?.data);
     setLoadingCreate(false);
@@ -121,22 +118,7 @@ const handleDeleteLink=(itemId)=>{
     }
   };
 
-//extract form data
-
-const extractFormData=(datas)=>{
   
-  const extractedData=datas && 
-       Object?.keys(datas)?.map((fieldName) =>{
-             console.log(fieldName);
-          return  fieldName !== "submit" ? (datas[fieldName] !== "hidden" &&
-                  fieldName !== "form_index" && (fieldName ) ): ''
-                }).join('<br/>');
-   
-    return extractedData;
-  }
-    
-
-
 
 // function to send extracted data to email
 const handleSendEmail = async (datas) => {
@@ -150,7 +132,7 @@ const handleSendEmail = async (datas) => {
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dowell Website Crawler</title>
+        <title>DoWell "Contact Us Page" Extractor</title>
       </head>
       <body>
         <div style="font-family: Helvetica, Arial, sans-serif; min-width: 100px; overflow: auto; line-height: 2">
@@ -162,12 +144,12 @@ const handleSendEmail = async (datas) => {
             
             <p style="font-size: 1.1em">Extracted Form Fields</p> ${" "}
             <ul>
-              ${Array.isArray(datas) ? (
-                datas.map((data) => extractFormData(data)
-                ).join('\n'))
-               : (
-                extractFormData(datas)
-              )}
+              ${Object.entries(datas)
+              .map(
+                ([name, value]) =>
+                  `<li key=${name}>${name} : ${value}</li>`
+              )
+              .join("")}
             </ul>
           </div>
         </div>
@@ -181,11 +163,10 @@ const handleSendEmail = async (datas) => {
       `https://100085.pythonanywhere.com/api/email/`,
       {
         toname: "Dowell UX Living Lab",
-        // toemail: "dowell@dowellresearch.uk",
         toemail: !email ? "dowell@dowellresearch.uk" : email,
         subject: `${
           email
-        } result from DoWell Website Crawler on ${new Date()}`,
+        } result from DoWell "Contact Us Page" Extractor on ${new Date()}`,
         email_content: htmlContent
       }
     );
@@ -257,18 +238,16 @@ const handleSendEmail = async (datas) => {
             Press enter or space after each entry.
           </div>
 
-          <div tabIndex={0}  className="flex mb-3 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:border-[#005734] w-full p-2.5">
-             <input
-                      type="email"
-                      className="flex-1 focus:outline-none "
-                      
-                      value={email}
-                      onChange={(e) =>setEmail(e.target.value)
-                      }
-            
-                      placeholder="dowell@dowellresearch.uk "
-                    />
-                  </div>
+          <input
+            type="email"
+            // border-2 border-green-500 focus:outline-none focus:border-green-500 p-2
+            className="border border-gray-300 flex mb-3 bg-gray-50 focus:outline-none text-gray-900 rounded-lg focus:border-[#005734] w-full p-2.5"
+            value={email}
+            onChange={(e) =>setEmail(e.target.value)
+            }
+
+            placeholder="dowell@dowellresearch.uk "
+          />
      
      
           <div className="flex flex-row gap-2 justify-center">

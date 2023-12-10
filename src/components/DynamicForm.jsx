@@ -14,7 +14,6 @@ const DynamicForm = ({ formData, webUrl,email }) => {
     const updatedFormValues = {
       ...formValues,
       [name]: value,
-      form_index: formData?.form_index,
     };
 
     setFormValues(updatedFormValues);
@@ -29,11 +28,10 @@ const handleSendEmail = async (htmlContent) => {
       `https://100085.pythonanywhere.com/api/email/`,
       {
         toname: "Dowell UX Living Lab",
-        // toemail: "dowell@dowellresearch.uk",
         toemail: !email ? "dowell@dowellresearch.uk" : email,
         subject: `${
           email
-        } result from DoWell Website Crawler on ${new Date()}`,
+        } result from DoWell "Contact Us Page" Extractor on ${new Date()}`,
         email_content: htmlContent
       }
     );
@@ -66,11 +64,7 @@ const handleSendEmail = async (htmlContent) => {
       .then((response) => {
         setLoading(false);
         toast.success(JSON.stringify(response?.data?.success));
-        console.log("Form data submitted successfully.");
         
-      
-            
-
         const htmlContent = `
         <!DOCTYPE html>
         <html lang="en">
@@ -78,7 +72,7 @@ const handleSendEmail = async (htmlContent) => {
             <meta charset="UTF-8">
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Dowell Website Crawler</title>
+            <title>DoWell "Contact Us Page" Extractor</title>
           </head>
           <body>
             <div style="font-family: Helvetica, Arial, sans-serif; min-width: 100px; overflow: auto; line-height: 2">
@@ -87,8 +81,15 @@ const handleSendEmail = async (htmlContent) => {
                   <a href="#" style="font-size: 1.2em; color: #00466a; text-decoration: none; font-weight: 600">Dowell UX Living Lab</a>
                 </div>
                 <p style="font-size: 1.1em">Email : ${email}</p>
-                
-                <p style="font-size: 1.1em">Sent Datas</p> ${" "}
+                <p style="font-size: 1.1em">Links</p> ${" "}
+                  <ul>
+                    ${webUrl?.map((link) => (
+                        `<li key=${link}>
+                          <a href=${link}>${link}</a>
+                        </li>`
+                    ))}
+                  </ul>
+                <p style="font-size: 1.1em">Sent Form Data</p> ${" "}
                 <ul>
                   ${Object.entries(formValues)
                     .map(
@@ -122,27 +123,22 @@ const handleSendEmail = async (htmlContent) => {
                 Object?.keys(formData)?.map((fieldName, index) =>
                   fieldName !== "submit" ? (
                     <div key={index}>
-                      {formData[fieldName] !== "hidden" &&
-                        fieldName !== "form_index" && (
-                          <label
-                            htmlFor={fieldName}
-                            className="block mb-1 font-medium text-dark-600"
-                          >
-                            {fieldName}
-                          </label>
-                        )}
+                      <label
+                        htmlFor={fieldName}
+                        className="block mb-1 font-medium text-dark-600"
+                      >
+                        {fieldName}
+                      </label>
+                        
 
-                      {fieldName === "form_index" ? (
-                        <input
-                          type="hidden"
-                          name={fieldName}
-                          value={formData[fieldName]}
-                        />
-                      ) : formData[fieldName] === "textarea" ? (
+                      {formData[fieldName] === "textarea" ? (
                         <textarea
                           id="message"
                           rows="3"
-                          className="block p-3 w-full text-lg text-gray-900 bg-gray-50 rounded-lg shadow-sm border border-gray-300 focus:outline-[#005734]"
+                          onChange={handleInputChange}
+                          name={fieldName}
+                          value={formValues[fieldName] || ""}
+                          className="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg shadow-sm border border-gray-300 focus:outline-[#005734]"
                           placeholder="Leave Your Message Here."
                         ></textarea>
                       ) : (
