@@ -185,8 +185,8 @@ const handleDeleteLink=(itemId)=>{
               className="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded flex items-center"
             >
               <FaFileExcel /> 
-              <p>{links.length < 1 ? "Download Excel" : loadingDownload ? 
-              <Spinner /> : "Download Excel"}</p>
+              <p>{links.length < 1 ? "Download" : loadingDownload ? 
+              <Spinner /> : "Download"}</p>
               
             </button>
           </div>
