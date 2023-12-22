@@ -3,60 +3,58 @@
 @tailwind utilities;
 
 .page-container {
-    background-color: #ffffff;
-    border-radius: 20px;
-    width: 50%; /* Set your desired width */
-    margin: 10vh auto 5vh; /* Center vertically and horizontally */
-    padding: 20px; /* Add padding for better visual */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Darker box shadow */
+  background-color: #ffffff;
+  border-radius: 20px;
+  width: 50%; /* Set your desired width */
+  margin: 10vh auto 5vh; /* Center vertically and horizontally */
+  padding: 20px; /* Add padding for better visual */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Darker box shadow */
 
-    @media (max-width: 912px) {
-        width: 70%; /* Adjust width for tablets */
-      }
-  
-    /* Media query for tablets */
-    @media (max-width: 820px) {
-      width: 90%; /* Adjust width for tablets */
-    }
-  
-    /* Media query for mobile devices */
-    @media (max-width: 600px) {
-      box-shadow: none;
-      width: 100%; /* Adjust width for mobile devices */
-    }
+  @media (max-width: 912px) {
+    width: 70%; /* Adjust width for tablets */
+  }
+
+  /* Media query for tablets */
+  @media (max-width: 820px) {
+    width: 90%; /* Adjust width for tablets */
+  }
+
+  /* Media query for mobile devices */
+  @media (max-width: 600px) {
+    box-shadow: none;
+    width: 100%; /* Adjust width for mobile devices */
+  }
 }
 
 img {
-    width: 170px;
-    margin-bottom: 1rem;
-    height: auto;
-    display: flex;
-    justify-content: center;
+  width: 170px;
+  margin-bottom: 1rem;
+  height: auto;
+  display: flex;
+  justify-content: center;
 }
 
 h1 {
-    font-weight: bold;
-    font-size: 2rem;
-    color: #005734;
-    font-size: 2.5rem;
-}
-  
-  
-.subTitle {
-    font-weight: 400;
+  font-weight: bold;
+  font-size: 2rem;
+  color: #005734;
+  font-size: 2.1rem;
 }
 
+.subTitle {
+  font-weight: 400;
+}
 
 @media only screen and (max-width: 600px) {
-    h1 {
-      font-size: 1.5rem;
-    }
-  
-    img {
-      width: 130px;
-    }
-  
-    .subTitle {
-      font-size: 13px;
-    }
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  img {
+    width: 130px;
+  }
+
+  .subTitle {
+    font-size: 13px;
+  }
 }

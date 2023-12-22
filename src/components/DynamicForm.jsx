@@ -3,7 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const DynamicForm = ({ formData, webUrl }) => {
+const DynamicForm = ({ formData, webUrl,email }) => {
   const [formValues, setFormValues] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -14,11 +14,38 @@ const DynamicForm = ({ formData, webUrl }) => {
     const updatedFormValues = {
       ...formValues,
       [name]: value,
-      form_index: formData?.form_index,
     };
 
     setFormValues(updatedFormValues);
   };
+
+
+// function to send extracted data to email
+const handleSendEmail = async (htmlContent) => {
+  try {
+    // setLoading(true);
+    const response = await axios.post(
+      `https://100085.pythonanywhere.com/api/email/`,
+      {
+        toname: "Dowell UX Living Lab",
+        toemail: !email ? "dowell@dowellresearch.uk" : email,
+        subject: `${
+          email
+        } result from DoWell "Contact Us Page" Extractor on ${new Date()}`,
+        email_content: htmlContent
+      }
+    );
+    // Set the emailSent state to true when the email is sent
+    
+    console.log(response);
+  } catch (error) {
+    toast.error(error ? error?.response?.data?.error : error?.message);
+     console.log(error)
+  }
+};
+ 
+
+
 
 
   const handleSubmit = (e) => {
@@ -37,7 +64,49 @@ const DynamicForm = ({ formData, webUrl }) => {
       .then((response) => {
         setLoading(false);
         toast.success(JSON.stringify(response?.data?.success));
-        console.log("Form data submitted successfully.");
+        
+        const htmlContent = `
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>DoWell "Contact Us Page" Extractor</title>
+          </head>
+          <body>
+            <div style="font-family: Helvetica, Arial, sans-serif; min-width: 100px; overflow: auto; line-height: 2">
+              <div style="margin: 50px auto; width: 70%; padding: 20px 0">
+                <div style="border-bottom: 1px solid #eee">
+                  <a href="#" style="font-size: 1.2em; color: #00466a; text-decoration: none; font-weight: 600">Dowell UX Living Lab</a>
+                </div>
+                <p style="font-size: 1.1em">Email : ${email}</p>
+                <p style="font-size: 1.1em">Links</p> ${" "}
+                  <ul>
+                    ${webUrl?.map((link) => (
+                        `<li key=${link}>
+                          <a href=${link}>${link}</a>
+                        </li>`
+                    ))}
+                  </ul>
+                <p style="font-size: 1.1em">Sent Form Data</p> ${" "}
+                <ul>
+                  ${Object.entries(formValues)
+                    .map(
+                      ([name, value]) =>
+                        `<li key=${name}>${name} : ${value}</li>`
+                    )
+                    .join("")}
+                </ul>
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
+
+      handleSendEmail(htmlContent);
+      
+      
       })
       .catch((error) => {
         setLoading(false);
@@ -54,27 +123,22 @@ const DynamicForm = ({ formData, webUrl }) => {
                 Object?.keys(formData)?.map((fieldName, index) =>
                   fieldName !== "submit" ? (
                     <div key={index}>
-                      {formData[fieldName] !== "hidden" &&
-                        fieldName !== "form_index" && (
-                          <label
-                            htmlFor={fieldName}
-                            className="block mb-1 font-medium text-dark-600"
-                          >
-                            {fieldName}
-                          </label>
-                        )}
+                      <label
+                        htmlFor={fieldName}
+                        className="block mb-1 font-medium text-dark-600"
+                      >
+                        {fieldName}
+                      </label>
+                        
 
-                      {fieldName === "form_index" ? (
-                        <input
-                          type="hidden"
-                          name={fieldName}
-                          value={formData[fieldName]}
-                        />
-                      ) : formData[fieldName] === "textarea" ? (
+                      {formData[fieldName] === "textarea" ? (
                         <textarea
                           id="message"
                           rows="3"
-                          className="block p-3 w-full text-lg text-gray-900 bg-gray-50 rounded-lg shadow-sm border border-gray-300 focus:outline-[#005734]"
+                          onChange={handleInputChange}
+                          name={fieldName}
+                          value={formValues[fieldName] || ""}
+                          className="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg shadow-sm border border-gray-300 focus:outline-[#005734]"
                           placeholder="Leave Your Message Here."
                         ></textarea>
                       ) : (

@@ -15,6 +15,8 @@ const Home = () => {
   const [link, setLink] = useState({});
   const [linksUrl,setLinksUrl]=useState([]);
   const links=linksUrl?.map(({item})=>item)
+  const [email,setEmail]=useState("");
+
 
   const handleScrapeForm = async () => {
     //delete id from the objects array and take the link 
@@ -27,10 +29,11 @@ const Home = () => {
           page_links:links,
         }
       );
+    response?.data && handleSendEmail(response.data);
+    setFormData(response?.data);
+    setLoadingCreate(false);
+    console.log("formData", formData)
 
-      setFormData(response?.data);
-      setLoadingCreate(false);
-      console.log("formData", formData)
     } catch (error) {
       setLoadingCreate(false);
       console.log(error);
@@ -115,6 +118,68 @@ const handleDeleteLink=(itemId)=>{
     }
   };
 
+  
+
+// function to send extracted data to email
+const handleSendEmail = async (datas) => {
+  try {
+    // setLoading(true);
+
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DoWell "Contact Us Page" Extractor</title>
+      </head>
+      <body>
+        <div style="font-family: Helvetica, Arial, sans-serif; min-width: 100px; overflow: auto; line-height: 2">
+          <div style="margin: 50px auto; width: 70%; padding: 20px 0">
+            <div style="border-bottom: 1px solid #eee">
+              <a href="#" style="font-size: 1.2em; color: #00466a; text-decoration: none; font-weight: 600">Dowell UX Living Lab</a>
+            </div>
+            <p style="font-size: 1.1em">Email : ${email}</p>
+            
+            <p style="font-size: 1.1em">Extracted Form Fields</p> ${" "}
+            <ul>
+              ${Object.entries(datas)
+              .map(
+                ([name, value]) =>
+                  `<li key=${name}>${name} : ${value}</li>`
+              )
+              .join("")}
+            </ul>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+
+
+    const response = await axios.post(
+      `https://100085.pythonanywhere.com/api/email/`,
+      {
+        toname: "Dowell UX Living Lab",
+        toemail: !email ? "dowell@dowellresearch.uk" : email,
+        subject: `${
+          email
+        } result from DoWell "Contact Us Page" Extractor on ${new Date()}`,
+        email_content: htmlContent
+      }
+    );
+    // Set the emailSent state to true when the email is sent
+    
+    console.log(response);
+  } catch (error) {
+    toast.error(error ? error?.response?.data?.error : error?.message);
+     console.log(error)
+  }
+};
+
+
   return (
     <div className="page-container">
       <div className="mx-auto overflow-hidden max-w-[800px]">
@@ -130,16 +195,18 @@ const handleDeleteLink=(itemId)=>{
         <hr className="col-md-10 pb-3"/>
 
         {/* Email Extractor Title */}
-        <h1 className="text-center font-bold text-[#005734]">
+        <h1 className="text-center font-bold text-[#005734]" >
           {" "}
-          DoWell contact us Form Extractor{" "}
+          DoWell &quot;Contact Us Page&quot; Extractor{" "}
         </h1>
 
         {/*  About Email Extractor */}
         <p className="subTitle mt-5 mb-3">
-          Introducing the ultimate form extraction and submission tool. Extract
-          forms from any webpage instantly. Fill them out directly or download
-          as Excel for offline editing. Effortlessly submit forms at their
+        Introducing the ultimate &quot;contact  us&quot; form extraction and submission tool. Extract &quot;contact  us&quot; form from any webpage instantly. 
+        Fill it out directly or download as spreadsheet for offline editing. 
+          <br/>
+          <br/>
+          Effortlessly submit forms at their
           original location. Simplify your form interaction today !
         </p>
 
@@ -170,6 +237,18 @@ const handleDeleteLink=(itemId)=>{
             Press enter or space after each entry.
           </div>
 
+          <input
+            type="email"
+            // border-2 border-green-500 focus:outline-none focus:border-green-500 p-2
+            className="border border-gray-300 flex mb-3 bg-gray-50 focus:outline-none text-gray-900 rounded-lg focus:border-[#005734] w-full p-2.5"
+            value={email}
+            onChange={(e) =>setEmail(e.target.value)
+            }
+
+            placeholder="dowell@dowellresearch.uk "
+          />
+     
+     
           <div className="flex flex-row gap-2 justify-center">
             <button
               onClick={handleScrapeForm}
@@ -209,12 +288,12 @@ const handleDeleteLink=(itemId)=>{
               {Array.isArray(formData) ? (
                 formData.map((data, index) => (
                   <div key={index}>
-                    <DynamicForm formData={data} webUrl={links} />
+                    <DynamicForm formData={data} webUrl={links} email={email} />
                   </div>
                 ))
               ) : (
                 <div>
-                    <DynamicForm formData={formData} webUrl={links} />
+                    <DynamicForm formData={formData} webUrl={links} email={email } />
                 </div>
               )}
             </Accordion>
