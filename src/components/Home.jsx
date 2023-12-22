@@ -86,7 +86,9 @@ const handleDeleteLink=(itemId)=>{
       );
 
       // Extract the filename from the Content-Disposition header
+      console.log('response',response);
       const contentDisposition = response.headers["content-disposition"];
+      console.log('new disposition',response.headers.get('content-disposition'));
       let filename = ''; // Default filename
       if (contentDisposition) {
         const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
@@ -286,8 +288,8 @@ const handleSendEmail = async (datas) => {
               className="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded flex items-center"
             >
               <FaFileExcel /> 
-              <p>{links.length < 1 ? "Download Excel" : loadingDownload ? 
-              <Spinner /> : "Download Excel"}</p>
+              <p>{links.length < 1 ? "Download" : loadingDownload ? 
+              <Spinner /> : "Download"}</p>
               
             </button>
           </div>
