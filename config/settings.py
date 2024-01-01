@@ -138,3 +138,5 @@ CORS_ORIGIN_ALLOW_ALL = True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 INTERSERVER_URL = 'https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-qrcode-to-drive/'
+
+EXPERIENCED_SERVICE_USER_DETAILS_API = 'https://100105.pythonanywhere.com/api/v3/experience_database_services/?type=experienced_service_user_details'

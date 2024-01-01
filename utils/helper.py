@@ -7,6 +7,47 @@ import requests
 from typing import Iterable, List
 from urllib.parse import urlparse
 
+from config import settings
+
+
+def updateUsage(occurences, email):
+    url = "https://100105.pythonanywhere.com/api/v3/experience_database_services/"
+    params = {
+        "type": "update_user_usage",
+        "product_number": "UXLIVINGLAB005",
+        "email": email,
+        "occurrences": occurences
+    }
+    response = requests.get(url, params=params)
+    return response.json()
+
+def experienceUserDetails(email, title, content):
+    url = "https://100105.pythonanywhere.com/api/v3/experience_database_services/"
+    payload = {
+        "product_name":"WEBSITE CRAWL",
+        "email": email,
+        "experienced_data":{
+            "Title": title,
+            "Content": content,
+            "email": email
+        }
+    }
+    params = {
+        "type": "update_user_usage"
+    }
+    response = requests.get(url, json=payload, params=params)
+    return response.json()
+
+def serviceExperienceUSerDetails(occurences, email ):
+    url = settings.EXPERIENCED_SERVICE_USER_DETAILS_API
+    payload = {
+        "email": email,
+        "product_number": "UXLIVINGLAB005",
+        "occurrences": occurences
+    }
+    response = requests.post(url, json=payload)
+    return response
+
 
 def processApikey(api_key):
     url = f'https://100105.pythonanywhere.com/api/v3/process-services/?type=api_service&api_key={api_key}'
