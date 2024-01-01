@@ -35,7 +35,7 @@ def experienceUserDetails(email, title, content):
     params = {
         "type": "experienced_user_details"
     }
-    response = requests.get(url, json=payload, params=params)
+    response = requests.post(url, json=payload, params=params)
     return response.json()
 
 def serviceExperienceUSerDetails(occurences, email ):
