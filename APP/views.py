@@ -80,7 +80,7 @@ class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
                     # update Api usage on data website info retrival success
                     if param:
                         update_usage = UpdateUserUsage(occurences, email)
-                        experienceUserDb = ExperiencedUserDb(email, title=data["web_url"], content=str(response_dict))
+                        experienceUserDb = ExperiencedUserDb(email, title=data["web_url"], content=json.dumps(response_dict))
             
                         update_usage.start()
                         experienceUserDb.start()
