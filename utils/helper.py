@@ -38,7 +38,7 @@ def experienceUserDetails(email, title, content):
     response = requests.post(url, json=payload, params=params)
     return response.json()
 
-def serviceExperienceUSerDetails(occurences, email ):
+def serviceExperienceUSerDetails(occurences, email):
     url = settings.EXPERIENCED_SERVICE_USER_DETAILS_API
     payload = {
         "email": email,

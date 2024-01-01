@@ -26,9 +26,9 @@ class ExperiencedUserDb(threading.Thread):
         # Your second threaded function logic goes here
         try:
             res = experienceUserDetails(self.email, self.title, self.content)
-            print(res["message"])
+            print(f"<================{res['message']}==============>")
         except Exception as e:
-            print(f"An error occurred while trying to Insert Experienced User Data In DB.{e}")
+            print(f"<================An error occurred while trying to Insert Experienced User Data In DB.{e}==============>")
 
 class UpdateUserUsage(threading.Thread):
     def __init__(self, occurences, email):
@@ -40,9 +40,9 @@ class UpdateUserUsage(threading.Thread):
         # Your second threaded function logic goes here
         try:
             res = updateUsage(self.occurences, self.email)
-            print(res["message"])
+            print(f"<============{res['message']}==============>")
         except Exception as e:
-            print(f"An error occurred while trying to update user usage.{e}")
+            print(f"<============An error occurred while trying to update user usage.{e}=================>")
         
 class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
     """
