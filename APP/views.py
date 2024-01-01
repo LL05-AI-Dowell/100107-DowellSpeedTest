@@ -49,10 +49,10 @@ class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
     API view for website info extraction.
     """
     serializer_class = WebsiteInfoRequestSerializer
-    
+
     def post(self, request, *args, **kwargs):
         data = request.data
-        param = request.Get.get("main", True)
+        param = request.GET.get("main")
 
         serializer = self.get_serializer(data=data)
 
