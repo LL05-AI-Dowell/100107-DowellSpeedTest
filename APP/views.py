@@ -69,8 +69,8 @@ class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
             else:
                 pass
                 
-            # if experience returns successcontinur and retrieve website information.
-            if r["success"]:
+            # if experience returns success continue and retrieve website information.
+            if r["success"] or not param:
                 validated_data = serializer.validated_data
                 api_key = validated_data.pop('api_key', None)
                 web_info_request = WebsiteInfoRequest(body=validated_data)
