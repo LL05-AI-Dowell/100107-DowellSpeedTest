@@ -33,7 +33,7 @@ def experienceUserDetails(email, title, content):
         }
     }
     params = {
-        "type": "update_user_usage"
+        "type": "experienced_user_details"
     }
     response = requests.get(url, json=payload, params=params)
     return response.json()
