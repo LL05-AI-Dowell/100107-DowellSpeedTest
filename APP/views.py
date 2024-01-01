@@ -66,26 +66,29 @@ class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
                     r = r.json()
                 except Exception as e:
                     print({"error": f"{e}"}, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                pass
                 
             # if experience returns success continue and retrieve website information.
-            if r["success"] or not param:
-                validated_data = serializer.validated_data
-                api_key = validated_data.pop('api_key', None)
-                web_info_request = WebsiteInfoRequest(body=validated_data)
-                response_dict = web_info_request.get_structured_response_dict(api_key)
+                if r["success"]:
+                    validated_data = serializer.validated_data
+                    api_key = validated_data.pop('api_key', None)
+                    web_info_request = WebsiteInfoRequest(body=validated_data)
+                    response_dict = web_info_request.get_structured_response_dict(api_key)
 
-                if response_dict:
-                    # update Api usage on data website info retrival success
-                    if param:
+                    if response_dict :
+                        # update Api usage on data website info retrival success
                         update_usage = UpdateUserUsage(occurences, email)
                         experienceUserDb = ExperiencedUserDb(email, title=data["web_url"], content=json.dumps(response_dict))
             
                         update_usage.start()
                         experienceUserDb.start()
                     return Response(response_dict, status=status.HTTP_200_OK)
-                return Response(web_info_request.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                validated_data = serializer.validated_data
+                api_key = validated_data.pop('api_key', None)
+                web_info_request = WebsiteInfoRequest(body=validated_data)
+                response_dict = web_info_request.get_structured_response_dict(api_key)
+                return Response(response_dict, status=status.HTTP_200_OK)
+                # return Response(web_info_request.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response({"error": r["message"]}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
