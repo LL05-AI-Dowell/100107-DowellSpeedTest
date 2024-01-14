@@ -14,7 +14,7 @@ import re
 from bs4 import BeautifulSoup
 from bs4_web_scraper.scraper import BS4WebScraper
 from urllib3.util import parse_url
-from urllib.parse import unquote_plus
+from urllib.parse import unquote_plus, urljoin, urlsplit, urlunsplit
 from difflib import get_close_matches
 from concurrent.futures import ThreadPoolExecutor
 
@@ -186,14 +186,22 @@ class WebsiteInfoScraper:
         return list(set(filter(lambda x : bool(x), logos)))
     
 
+    def remove_last_path_segment(self, url):
+        parts = list(urlsplit(url))
+        path_segments = parts[2].split('/')
+        if len(path_segments) > 2:
+            path_segments.pop()
+        parts[2] = '/'.join(path_segments)
+        return urlunsplit(parts)
+
     def guess_page_url(self, page_name: str):
         """
-        Tries to guess the correct url of a page on the website based on the page name.
+        Tries to guess the correct URL of a page on the website based on the page name.
 
-        :param page_name: The name of the page to guess the url of. \
+        :param page_name: The name of the page to guess the URL of. \
             Can be the name of an external page or a page on the website\
-                  as long as it can related to a url on the website.
-        :return: url of the page if found, None otherwise.
+                  as long as it can relate to a URL on the website.
+        :return: URL of the page if found, None otherwise.
         """
         base_url = self.engine.get_base_url(self.target)
         links = self.engine.find_links(
@@ -201,16 +209,21 @@ class WebsiteInfoScraper:
             depth=self.maximum_search_depth
         )
         links = [link.replace(':///', '://') for link in links]
+
         # Try and find a close match
-        urls = {unquote_plus(link) : link for link in links}
+        urls = {unquote_plus(link): link for link in links}
         matches = get_close_matches(page_name.lower(), urls.keys(), n=len(urls)//2 or 1, cutoff=0.5)
         match = urls.get(matches[0]) if matches else None
         if match:
             return match
+
         # If no close match, try and find a link with the page name in it
         for link in links:
             if page_name.lower() in link.lower() or page_name.strip().lower() in link.lower():
-                return link
+                # Remove the last path segment only if there are more than two paths
+                modified_link = self.remove_last_path_segment(link)
+                return urljoin(base_url, modified_link)
+
         # If still no match, try and find a link with the page name in its text
         link_tags = self.engine.find_all_tags(
             url=base_url,
@@ -219,9 +232,11 @@ class WebsiteInfoScraper:
         )
         for tag in link_tags:
             if page_name.lower() in tag.text.lower():
-                return tag.get("href", None)
+                # Remove the last path segment only if there are more than two paths
+                modified_link = self.remove_last_path_segment(tag.get("href", ""))
+                return urljoin(base_url, modified_link)
+
         return None
-    
 
     def guess_pages_urls(self, page_names: list[str]):
         """
