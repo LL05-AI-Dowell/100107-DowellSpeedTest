@@ -23,6 +23,7 @@ from .misc import SOCIAL_PLATFORMS, common_address_components
 
 
 from openpyxl import Workbook, load_workbook
+from typing import Optional
 
 
 class WebsiteInfoScraper:
@@ -75,7 +76,18 @@ class WebsiteInfoScraper:
         
         # else:
         #     self.browser = webdriver.Firefox
-        
+
+    @staticmethod    
+    def normalize_url(url: Optional[str]) -> Optional[str]:
+        """
+        Normalize the URL by adding 'http://' if the scheme is missing.
+
+        :param url: The URL to normalize.
+        :return: Normalized URL.
+        """
+        if url and not url.startswith(('http://', 'https://')):
+            return 'http://' + url
+        return url
 
 
     def find_website_name(self) -> str | None:
