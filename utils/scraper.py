@@ -138,14 +138,31 @@ class WebsiteInfoScraper:
         return matches[0] if matches else None
     
 
+
     def find_emails(self):
         """
         Finds all the emails on the website.
 
         :return: A list of emails found.
         """
-        result = self.engine.find_emails(url=self.target, depth=self.maximum_search_depth)
-        return list(set(result))
+        normalized_url = self.normalize_url(self.target)
+        
+        try:
+            result = self.engine.find_emails(url=normalized_url, depth=self.maximum_search_depth)
+            return list(set(result))
+        except Exception as e:
+            print(f"Error while extracting emails from {normalized_url}: {e}")
+            return []
+
+
+    # def find_emails(self):
+    #     """
+    #     Finds all the emails on the website.
+
+    #     :return: A list of emails found.
+    #     """
+    #     result = self.engine.find_emails(url=self.target, depth=self.maximum_search_depth)
+    #     return list(set(result))
     
 
     def find_phone_numbers(self):
