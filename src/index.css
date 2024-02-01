@@ -36,9 +36,9 @@ img {
 
 h1 {
   font-weight: bold;
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: #005734;
-  font-size: 2.1rem;
+  font-size: 1.5rem;
 }
 
 .subTitle {
@@ -47,7 +47,7 @@ h1 {
 
 @media only screen and (max-width: 600px) {
   h1 {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 
   img {
@@ -55,6 +55,50 @@ h1 {
   }
 
   .subTitle {
-    font-size: 13px;
+    font-size: 12px;
+  }
+}
+.green-spinner {
+  color: #005734;
+}
+
+.modal-divs {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+  justify-content: center;
+}
+
+@media only screen and (max-width: 600px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  img {
+    width: 130px;
+  }
+
+  .subTitle {
+    font-size: 12px;
+  }
+}
+.page-container {
+  background-color: #ffffff;
+  border-radius: 20px;
+  width: 50%; /* Set your desired width */
+  margin: 10vh auto 5vh; /* Center vertically and horizontally */
+  padding: 20px; /* Add padding for better visual */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Darker box shadow */
+
+  /* Media query for tablets */
+  @media (max-width: 820px) {
+    width: 90%; /* Adjust width for tablets */
+  }
+
+  /* Media query for mobile devices */
+  @media (max-width: 600px) {
+    box-shadow: none;
+    width: 100%; /* Adjust width for mobile devices */
   }
 }

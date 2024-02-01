@@ -4,8 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Spinner from "./spinner";
 
-
-const FileUpload = ({urls}) => {
+const FileUpload = ({ urls }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
@@ -51,37 +50,31 @@ const FileUpload = ({urls}) => {
   };
 
   return (
-      <form onSubmit={handleSubmit}>
-        <div className="container mx-auto bg-white max-w-[800px]">
-          <label
-            className="block mb-2 mt-4 font-bold"
-            htmlFor="file_input"
+    <form onSubmit={handleSubmit}>
+      <div className="container mx-auto bg-white max-w-[800px]">
+        <label className="block mb-2 mt-4 font-bold" htmlFor="file_input">
+          Upload file
+        </label>
+
+        <input
+          // className="border block w-full p-2.5 rounded-md focus:outline-none focus:outline-[#005734]"
+          className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-[#005734] w-full p-2.5"
+          id="file_input"
+          type="file"
+          onChange={handleFileChange}
+        />
+
+        <div className="flex flex-row gap-2 justify-center">
+          <button
+            disabled={!selectedFile || uploading}
+            className="mt-3 bg-green-700 hover:bg-green-600 text-white font-bold py-2 pb-0 px-4 rounded flex items-center"
           >
-            Upload file
-          </label>
-
-          <input
-            // className="border block w-full p-2.5 rounded-md focus:outline-none focus:outline-[#005734]"
-            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-[#005734] w-full p-2.5"
-            id="file_input"
-            type="file"
-            onChange={handleFileChange}
-          />
-
-          <div className="flex flex-row gap-2 justify-center">
-            <button
-              disabled={!selectedFile || uploading}
-              className="mt-3 bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex items-center"
-            >
             {/* {uploading ? "Uploading and Submitting..." : "Upload"} */}
-                <p>{uploading ? 
-                <Spinner /> : "Upload and Submit"}</p>
-                
-            </button>
-          </div>
-          
+            <p>{uploading ? <Spinner /> : "Upload and Submit"}</p>
+          </button>
         </div>
-      </form>
+      </div>
+    </form>
   );
 };
 
