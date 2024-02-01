@@ -213,130 +213,124 @@ const Home = () => {
 
   return (
     <div className="page-container">
-      <div style={{ width: "100%", height: "100%" }}>
-        <div>
-          <div className="container">
-            {showOccurrence && modalOpen && (
-              <OccurenceModal
-                email={email}
-                showModal={modalOpen}
-                setOpenModal={setModalOpen}
-                showOccurrence={showOccurrence}
-                occurrence={occurrence}
-                handleFormData={handleFormData}
-              />
-            )}
+      {showOccurrence && modalOpen && (
+        <OccurenceModal
+          email={email}
+          showModal={modalOpen}
+          setOpenModal={setModalOpen}
+          showOccurrence={showOccurrence}
+          occurrence={occurrence}
+          handleFormData={handleFormData}
+        />
+      )}
 
-            <div className="mx-auto overflow-hidden max-w-[800px]">
-              {/* Logo */}
-              <div className="flex justify-center my-4">
-                <img
-                  src="https://www.uxlivinglab.org/wp-content/uploads/2023/10/image_1-3.png"
-                  className="flex justify-center"
-                  alt="Dowell Logo"
-                />
-              </div>
+      <div className="mx-auto overflow-hidden max-w-[800px]">
+        {/* Logo */}
+        <div className="flex justify-center my-4">
+          <img
+            src="https://www.uxlivinglab.org/wp-content/uploads/2023/10/image_1-3.png"
+            className="flex justify-center"
+            alt="Dowell Logo"
+          />
+        </div>
 
-              <hr className="col-md-10 pb-3" />
+        <hr className="col-md-10 pb-3" />
 
-              {/* Email Extractor Title */}
-              <h1 className="text-center font-bold text-[#005734]">
-                {" "}
-                DoWell &quot;Contact Us Page&quot; Extractor{" "}
-              </h1>
+        {/* Email Extractor Title */}
+        <h1 className="text-center font-bold text-[#005734]">
+          {" "}
+          DoWell &quot;Contact Us Page&quot; Extractor{" "}
+        </h1>
 
-              {/*  About Email Extractor */}
-              <p className="subTitle mt-5 mb-3">
-                Introducing the ultimate &quot;contact us&quot; form extraction
-                and submission tool. Extract &quot;contact us&quot; form from
-                any webpage instantly. Fill it out directly or download as
-                spreadsheet for offline editing.
-                <br />
-                <br />
-                Effortlessly submit forms at their original location. Simplify
-                your form interaction today!
-              </p>
+        {/*  About Email Extractor */}
+        <p className="subTitle mt-5 mb-3">
+          Introducing the ultimate &quot;contact us&quot; form extraction and
+          submission tool. Extract &quot;contact us&quot; form from any webpage
+          instantly. Fill it out directly or download as spreadsheet for offline
+          editing.
+          <br />
+          <br />
+          Effortlessly submit forms at their original location. Simplify your
+          form interaction today!
+        </p>
 
-              {/* Link Form and 2 Buttons */}
-              <div className="flex flex-col mt-4">
-                <div
-                  tabIndex={0}
-                  className="flex-grow bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:border-[#005734] w-full p-2.5"
+        {/* Link Form and 2 Buttons */}
+        <div className="flex flex-col mt-4">
+          <div
+            tabIndex={0}
+            className="flex-grow bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:border-[#005734] w-full p-2.5"
+          >
+            {linksUrl.map(({ item, id }) => (
+              <button
+                key={id}
+                className="border border-0.15 rounded-md p-1 hover:bg-green-700 text-white bg-[#005734] mr-1"
+              >
+                {item}
+                <small
+                  onClick={() => handleDeleteLink(id)}
+                  className="text-red-500 text-md m-2 mr-0.5 rounded-full bg-green-200 p-0.5 px-2 font-semibold"
                 >
-                  {linksUrl.map(({ item, id }) => (
-                    <button
-                      key={id}
-                      className="border border-0.15 rounded-md p-1 hover:bg-green-700 text-white bg-[#005734] mr-1"
-                    >
-                      {item}
-                      <small
-                        onClick={() => handleDeleteLink(id)}
-                        className="text-red-500 text-md m-2 mr-0.5 rounded-full bg-green-200 p-0.5 px-2 font-semibold"
-                      >
-                        X
-                      </small>
-                    </button>
-                  ))}
-                  <input
-                    id="my-input"
-                    onChange={handleInputLinks}
-                    onKeyDown={handleEnterKey}
-                    placeholder="Enter the Website Url or Link Here"
-                    className="border-none bg-gray-50 focus:border-none focus:outline-none w-64"
-                  />
-                </div>
+                  X
+                </small>
+              </button>
+            ))}
+            <input
+              id="my-input"
+              onChange={handleInputLinks}
+              onKeyDown={handleEnterKey}
+              placeholder="Enter the Website Url or Link Here"
+              className="border-none bg-gray-50 focus:border-none focus:outline-none w-64"
+            />
+          </div>
 
-                <div className="mb-4 text-xs text-gray-500">
-                  Press enter or space after each entry.
-                </div>
+          <div className="mb-4 text-xs text-gray-500">
+            Press enter or space after each entry.
+          </div>
 
-                <input
-                  type="email"
-                  // border-2 border-green-500 focus:outline-none focus:border-green-500 p-2
-                  className="border border-gray-300 flex mb-3 bg-gray-50 focus:outline-none text-gray-900 rounded-lg focus:border-[#005734] w-full p-2.5"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="dowell@dowellresearch.uk "
-                />
+          <input
+            type="email"
+            // border-2 border-green-500 focus:outline-none focus:border-green-500 p-2
+            className="border border-gray-300 flex mb-3 bg-gray-50 focus:outline-none text-gray-900 rounded-lg focus:border-[#005734] w-full p-2.5"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="dowell@dowellresearch.uk "
+          />
 
-                <div className="flex flex-row gap-2 justify-center">
-                  <button
-                    onClick={handleScrapeForm}
-                    disabled={links.length < 1 || loadingCreate}
-                    className="bg-green-700 hover:bg-green-600 disabled:bg-green-600 text-white py-1 px-4 rounded"
-                  >
-                    {links.length < 1 ? (
-                      "Enter Web Urls"
-                    ) : // : !formValues.email
-                    // ? "Enter Your Email"
-                    loadingGetOccurence ? (
-                      <Spinner />
-                    ) : loading ? (
-                      "Scraping Forms..."
-                    ) : (
-                      "Scrap Forms"
-                    )}
-                  </button>
+          <div className="flex flex-row gap-2 justify-center">
+            <button
+              onClick={handleScrapeForm}
+              disabled={links.length < 1 || loadingCreate}
+              className="bg-green-700 hover:bg-green-600 disabled:bg-green-600 text-white py-2 px-4 rounded"
+            >
+              {links.length < 1 ? (
+                "Enter Web Urls"
+              ) : // : !formValues.email
+              // ? "Enter Your Email"
+              loadingGetOccurence ? (
+                <Spinner />
+              ) : loading ? (
+                "Scraping Forms..."
+              ) : (
+                "Scrap Forms"
+              )}
+            </button>
 
-                  <button
-                    onClick={handleDownLoadFile}
-                    disabled={links.length < 1 || loadingDownload}
-                    className="bg-green-700 hover:bg-green-600 text-white py-1 px-4 rounded flex items-center"
-                  >
-                    <FaFileExcel />
-                    <p>
-                      {links.length < 1 ? (
-                        "Download"
-                      ) : loadingDownload ? (
-                        <Spinner />
-                      ) : (
-                        "Download"
-                      )}
-                    </p>
-                  </button>
-                </div>
-              </div>
-            </div>
+            <button
+              onClick={handleDownLoadFile}
+              disabled={links.length < 1 || loadingDownload}
+              className="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded flex items-center"
+            >
+              <FaFileExcel />
+              <p>
+                {links.length < 1 ? (
+                  "Download"
+                ) : loadingDownload ? (
+                  <Spinner />
+                ) : (
+                  "Download"
+                )}
+              </p>
+            </button>
           </div>
         </div>
 
