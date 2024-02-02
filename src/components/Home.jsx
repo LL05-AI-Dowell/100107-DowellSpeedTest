@@ -58,9 +58,11 @@ const Home = () => {
     try {
       setLoadingCreate(true);
       const response = await axios.post(
-        `https://www.uxlive.me/api/contact-us-extractor/`,
+        `https://www.uxlive.me/api/contact-us-extractor/?main=${true}`,
         {
           page_links: links,
+          occurrences: occurrence,
+          email: email,
         }
       );
       response?.data && handleSendEmail(response.data);

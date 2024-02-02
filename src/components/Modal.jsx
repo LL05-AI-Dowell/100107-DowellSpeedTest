@@ -36,7 +36,7 @@ function OccurenceModal({
         {
           email: email,
           coupon: coupon,
-          product_number: "UXLIVINGLAB005",
+          product_number: "UXLIVINGLAB007",
         }
       );
       // Set the emailSent state to true when the email is sent
