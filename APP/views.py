@@ -62,7 +62,7 @@ class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
                 occurences = data["occurrences"]
                 email =  data["email"]
                 try:
-                    r = serviceExperienceUSerDetails(occurences, email)
+                    r = serviceExperienceUSerDetails(occurences, email, "UXLIVINGLAB005")
                     r = r.json()
                 except Exception as e:
                     print({"error": f"{e}"}, status=status.HTTP_400_BAD_REQUEST)
@@ -122,7 +122,7 @@ class ContactUsFormExtractorAPI(generics.GenericAPIView):
                 occurences = data["occurrences"]
                 email =  data["email"]
                 try:
-                    r = serviceExperienceUSerDetails(occurences, email)
+                    r = serviceExperienceUSerDetails(occurences, email, "UXLIVINGLAB007")
                     r = r.json()
                 except Exception as e:
                     print({"error": f"{e}"}, status=status.HTTP_400_BAD_REQUEST)

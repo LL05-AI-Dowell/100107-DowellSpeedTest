@@ -38,11 +38,11 @@ def experienceUserDetails(email, title, content):
     response = requests.post(url, json=payload, params=params)
     return response.json()
 
-def serviceExperienceUSerDetails(occurences, email):
+def serviceExperienceUSerDetails(occurences, email,product_number ):
     url = settings.EXPERIENCED_SERVICE_USER_DETAILS_API
     payload = {
         "email": email,
-        "product_number": "UXLIVINGLAB005",
+        "product_number": product_number,
         "occurrences": occurences
     }
     response = requests.post(url, json=payload)
