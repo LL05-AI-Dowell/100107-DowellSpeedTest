@@ -16,30 +16,31 @@ from utils.misc import INFO_REQUEST_FORMAT
 
 
 class ExperiencedUserDb(threading.Thread):
-    def __init__(self, email, title, content):
+    def __init__(self, email, title, content, product_name):
         super(ExperiencedUserDb, self).__init__()
         self.email = email
         self.title = title
         self.content = content
+        self.product_name = product_name
         
     def run(self):
         # Your second threaded function logic goes here
         try:
-            res = experienceUserDetails(self.email, self.title, self.content)
+            res = experienceUserDetails(self.email, self.title, self.content, self.product_name)
             print(f"<================{res['message']}==============>")
         except Exception as e:
             print(f"<================An error occurred while trying to Insert Experienced User Data In DB.{e}==============>")
 
 class UpdateUserUsage(threading.Thread):
-    def __init__(self, occurences, email):
+    def __init__(self, occurences, email, product_number):
         super(UpdateUserUsage, self).__init__()
         self.occurences = occurences
         self.email = email
-        
+        self.product_number = product_number
     def run(self):
         # Your second threaded function logic goes here
         try:
-            res = updateUsage(self.occurences, self.email)
+            res = updateUsage(self.occurences, self.email, self.product_number)
             print(f"<============{res['message']}==============>")
         except Exception as e:
             print(f"<============An error occurred while trying to update user usage.{e}=================>")
@@ -76,8 +77,11 @@ class WebsiteInfoExtractionAPIView(generics.GenericAPIView):
 
                     if response_dict :
                         # update Api usage on data website info retrival success
-                        update_usage = UpdateUserUsage(occurences, email)
-                        experienceUserDb = ExperiencedUserDb(email, title=data["web_url"], content=json.dumps(response_dict))
+                        update_usage = UpdateUserUsage(occurences, email, "UXLIVINGLAB005")
+                        experienceUserDb = ExperiencedUserDb(
+                            email, title=data["web_url"],
+                            content=json.dumps(response_dict),
+                             product_name="WEBSITE CRAWL")
             
                         update_usage.start()
                         experienceUserDb.start()
@@ -143,10 +147,13 @@ class ContactUsFormExtractorAPI(generics.GenericAPIView):
                         else:
                             merged_object.update(value)
 
-                    if merged_object :
+                    if merged_object:
                         # update Api usage on data website info retrival success
-                        update_usage = UpdateUserUsage(occurences, email)
-                        experienceUserDb = ExperiencedUserDb(email, title=data["email"], content=json.dumps(merged_object))
+                        update_usage = UpdateUserUsage(occurences, email, "UXLIVINGLAB005")
+                        experienceUserDb = ExperiencedUserDb(
+                            email, title=data["email"], content=json.dumps(merged_object),
+                            product_name="DOWELL CONTACT US"
+                        )
             
                         update_usage.start()
                         experienceUserDb.start()

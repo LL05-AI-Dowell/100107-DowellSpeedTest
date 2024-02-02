@@ -10,21 +10,21 @@ from urllib.parse import urlparse
 from config import settings
 
 
-def updateUsage(occurences, email):
+def updateUsage(occurences, email, product_number):
     url = "https://100105.pythonanywhere.com/api/v3/experience_database_services/"
     params = {
         "type": "update_user_usage",
-        "product_number": "UXLIVINGLAB005",
+        "product_number": product_number,
         "email": email,
         "occurrences": occurences
     }
     response = requests.get(url, params=params)
     return response.json()
 
-def experienceUserDetails(email, title, content):
+def experienceUserDetails(email, title, content, product_name):
     url = "https://100105.pythonanywhere.com/api/v3/experience_database_services/"
     payload = {
-        "product_name":"WEBSITE CRAWL",
+        "product_name": product_name,
         "email": email,
         "experienced_data":{
             "Title": title,
@@ -38,7 +38,7 @@ def experienceUserDetails(email, title, content):
     response = requests.post(url, json=payload, params=params)
     return response.json()
 
-def serviceExperienceUSerDetails(occurences, email,product_number ):
+def serviceExperienceUSerDetails(occurences, email, product_number):
     url = settings.EXPERIENCED_SERVICE_USER_DETAILS_API
     payload = {
         "email": email,
