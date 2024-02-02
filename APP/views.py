@@ -110,28 +110,66 @@ class ContactUsFormExtractorAPI(generics.GenericAPIView):
 
 
     def post(self, request):
+        data = request.data
+        param = request.GET.get("main")
         serializer = self.get_serializer(data=request.data)
+
+
         if serializer.is_valid(raise_exception=True):
             contact_us_urls = serializer.validated_data.get("page_links")
+            # Hit experienced serviceuser details api
+            if param:
+                occurences = data["occurrences"]
+                email =  data["email"]
+                try:
+                    r = serviceExperienceUSerDetails(occurences, email)
+                    r = r.json()
+                except Exception as e:
+                    print({"error": f"{e}"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                # if experience returns success continue and retrieve website information.
+                if r["success"]:
+                    response_dict = {}
+                    for i, contact_us_url in enumerate(contact_us_urls):
+                        web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
+                        response_dict[i] = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
 
-            try:
-                response_dict = {}
-                for i, contact_us_url in enumerate(contact_us_urls):
-                    web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
-                    response_dict[i] = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
+                    merged_object = {}
 
-                merged_object = {}
+                    for key, value in response_dict.items():
+                        if isinstance(value, list):
+                            for sub_dict in value:
+                                merged_object.update(sub_dict)
+                        else:
+                            merged_object.update(value)
 
-                for key, value in response_dict.items():
-                    if isinstance(value, list):
-                        for sub_dict in value:
-                            merged_object.update(sub_dict)
-                    else:
-                        merged_object.update(value)
+                    if merged_object :
+                        # update Api usage on data website info retrival success
+                        update_usage = UpdateUserUsage(occurences, email)
+                        experienceUserDb = ExperiencedUserDb(email, title=data["email"], content=json.dumps(merged_object))
+            
+                        update_usage.start()
+                        experienceUserDb.start()
+                    return Response(merged_object, status=status.HTTP_200_OK)
+            else:
+                try:
+                    response_dict = {}
+                    for i, contact_us_url in enumerate(contact_us_urls):
+                        web_info_scraper = WebsiteInfoScraper(web_url=contact_us_url)
+                        response_dict[i] = web_info_scraper.scrape_contact_us_page(web_url=contact_us_url)
 
-                return Response(merged_object, status=status.HTTP_200_OK)
-            except Exception as e:
-                return Response({"error": f"{e}"}, status=status.HTTP_400_BAD_REQUEST)
+                    merged_object = {}
+
+                    for key, value in response_dict.items():
+                        if isinstance(value, list):
+                            for sub_dict in value:
+                                merged_object.update(sub_dict)
+                        else:
+                            merged_object.update(value)
+
+                    return Response(merged_object, status=status.HTTP_200_OK)
+                except Exception as e:
+                    return Response({"error": f"{e}"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
