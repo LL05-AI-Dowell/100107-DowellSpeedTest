@@ -243,7 +243,7 @@ const Home = () => {
         </h1>
 
         {/*  About Email Extractor */}
-        <p className="subTitle mt-5 mb-3">
+        <p className="subTitle mt-4 mb-3">
           Introducing the ultimate &quot;contact us&quot; form extraction and
           submission tool. Extract &quot;contact us&quot; form from any webpage
           instantly. Fill it out directly or download as spreadsheet for offline

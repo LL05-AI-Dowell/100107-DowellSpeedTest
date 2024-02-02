@@ -59,9 +59,31 @@ function OccurenceModal({
   return (
     <>
       <Modal centered show={showModal} onHide={() => setOpenModal(false)}>
-        <Modal.Header closeButton></Modal.Header>
+        <Modal.Header>
+          <button
+            type="button"
+            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+            onClick={() => setOpenModal(false)}
+          >
+            <span className="sr-only">Close</span>
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
+        </Modal.Header>
         <Modal.Body>
-          <div className="modal-divs">
+          <div className="modal-divs h-[50%]">
             <img
               style={{ width: "100px" }}
               src="https://www.uxlivinglab.org/wp-content/uploads/2023/10/image_1-3.png"
@@ -79,14 +101,16 @@ function OccurenceModal({
               showOccurrence && occurrence >= 6 && occurrence !== null ? (
                 <>
                   <p>Your experience count is {occurrence}!</p>
-                  <div>
+                  <div className="flex gap-2 justify-center">
                     <Button
-                      variant="danger"
+                      className="bg-red-500  mt-2 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
                       onClick={() => setOpenModal(false)}
                     >
                       Cancel
                     </Button>{" "}
-                    <Button variant="success">Contribute</Button>
+                    <Button className="bg-[#005734] hover:bg-green-700  mt-2 text-white font-bold py-2 px-4 rounded">
+                      Contribute
+                    </Button>
                   </div>
                 </>
               ) : // experience is less than 4
@@ -95,7 +119,7 @@ function OccurenceModal({
                   <p>Your experience count is {occurrence}!</p>
                   <div>
                     <Button
-                      variant="success"
+                      className="bg-[#005734] mt-2 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                       onClick={() => {
                         setOpenModal(false);
                         handleFormData();
@@ -113,9 +137,9 @@ function OccurenceModal({
                 occurrence !== null && (
                   <div>
                     <p>Your experience count is {occurrence}!</p>
-                    <div>
+                    <div className="flex gap-2 justify-center">
                       <Button
-                        variant="success"
+                        className="bg-[#005734] hover:bg-green-700  mt-2 text-white font-bold py-2 px-4 rounded"
                         onClick={() => {
                           setOpenModal(false);
                           handleFormData();
@@ -123,7 +147,9 @@ function OccurenceModal({
                       >
                         Continue
                       </Button>{" "}
-                      <Button variant="secondary">Contribute</Button>
+                      <Button className="bg-gray-500  mt-2 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                        Contribute
+                      </Button>
                     </div>
                   </div>
                 )
@@ -136,7 +162,11 @@ function OccurenceModal({
               <p>
                 Do you have a coupon?{" "}
                 <Button
-                  variant={hasCoupon ? "danger" : "primary"}
+                  className={`${
+                    hasCoupon
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-[#005734] hover:bg-green-700"
+                  } text-white font-bold py-2 px-4 rounded`}
                   onClick={handleCoupon}
                 >
                   {hasCoupon ? "No" : "Yes"}
@@ -155,16 +185,23 @@ function OccurenceModal({
                   onChange={(e) => setCoupon(e.target.value)}
                   placeholder="Enter Coupon"
                 />{" "}
-                <Button
+                <button
                   disabled={!coupon || loading}
+                  className={`${
+                    !coupon || loading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-[#005734] hover:bg-green-700"
+                  } text-white font-bold py-2 px-4 rounded`}
                   onClick={handleRedeemCoupon}
                 >
                   {loading ? <Spinner /> : "Redeem"}
-                </Button>
+                </button>
               </div>
               <div>
                 {message?.error && (
-                  <Alert variant="danger">{message?.text}</Alert>
+                  <Alert className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                    {message?.text}
+                  </Alert>
                 )}
               </div>
             </div>
