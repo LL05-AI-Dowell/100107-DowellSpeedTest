@@ -1,12 +1,11 @@
 import json
 import threading
-from django.conf import settings
 from django.http import HttpResponse
 from rest_framework import generics, status, decorators
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from utils.helper import cleanUrl, create_short_uuid, experienceUserDetails, serviceExperienceUSerDetails, updateUsage
+from utils.helper import create_short_uuid, experienceUserDetails, serviceExperienceUSerDetails, updateUsage
 from .serializers import PublicContactInfoRequestSerializer, SubmitFileSerializer, SubmitFormSerializer, WebsiteInfoRequestSerializer
 from django.views.decorators.csrf import csrf_exempt
 

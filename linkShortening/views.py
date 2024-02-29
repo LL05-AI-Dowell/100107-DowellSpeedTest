@@ -313,7 +313,7 @@ class codeqrupdate(APIView):
             link = request.data.get("link", qrcode_["link_"])
             master_link = qrcode_["link"]
 
-            name = request.data.get("name")
+            name = request.data.get("name", qrcode_["name"])
             is_active = request.data.get("is_active", qrcode_["is_active"])
             
             
