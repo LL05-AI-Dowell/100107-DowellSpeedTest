@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  email-extrator-backend:
+  	build: 
+    	context: .
+    container_name: email-extrator-backend
+    restart: always
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+
+    ports:
+      - 8000:8000
+    expose:
+      - "8000"
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - webnet
+
+networks:
+    default:
+        name: webnet
