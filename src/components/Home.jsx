@@ -163,7 +163,7 @@ const handleSendEmail = async (datas) => {
       `https://100085.pythonanywhere.com/api/email/`,
       {
         toname: "Dowell UX Living Lab",
-        toemail: !email ? "dowell@dowellresearch.uk" : email,
+        toemail: email,
         subject: `${
           email
         } result from DoWell "Contact Us Page" Extractor on ${new Date()}`,
@@ -245,18 +245,24 @@ const handleSendEmail = async (datas) => {
             onChange={(e) =>setEmail(e.target.value)
             }
 
-            placeholder="dowell@dowellresearch.uk "
+            placeholder="Enter your email address"
           />
      
      
           <div className="flex flex-row gap-2 justify-center">
-            <button
-              onClick={handleScrapeForm}
-              disabled={links.length < 1 || loadingCreate}
-              className="bg-green-700 hover:bg-green-600 disabled:bg-green-600 text-white py-2 px-4 rounded"
-            >
-              {links.length < 1 ? "Enter Web Urls" : loadingCreate ? "Scraping Forms..." : "Scrap Forms"}
-            </button>
+          <button
+            onClick={handleScrapeForm}
+            disabled={links.length < 1 || loadingCreate || !email} // Disable if email is empty
+            className={`bg-green-700 hover:bg-green-600 ${
+              (links.length < 1 || loadingCreate || !email) && "disabled:bg-gray-400"
+            } text-white py-2 px-4 rounded`}
+          >
+            {links.length < 1
+              ? "Enter Web Urls"
+              : loadingCreate
+              ? "Scraping Forms..."
+              : "Scrap Forms"}
+          </button>
 
             <button
               onClick={handleDownLoadFile}
